@@ -38,3 +38,12 @@ D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\MongoDB
 D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\SharpCompress.dll
 D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Snappier.dll
 D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\ZstdSharp.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+D:\dotnet\LibraryManagementSystem\LibraryManagement.API\obj\Debug\net8.0\LibraryManagement.API.sourcelink.json

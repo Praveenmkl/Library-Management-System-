@@ -1,5 +1,6 @@
 using LibraryManagement.API.Models;
 using LibraryManagement.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers;
@@ -35,6 +36,7 @@ public class MembersController : ControllerBase
         return Ok(member);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(Member member)
     {
@@ -47,6 +49,7 @@ public class MembersController : ControllerBase
         );
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, Member member)
     {
@@ -63,6 +66,7 @@ public class MembersController : ControllerBase
         return Ok(member);
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {

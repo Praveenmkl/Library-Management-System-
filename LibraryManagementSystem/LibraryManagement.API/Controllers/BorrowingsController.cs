@@ -1,5 +1,6 @@
 using LibraryManagement.API.Models;
 using LibraryManagement.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.API.Controllers;
@@ -35,6 +36,7 @@ public class BorrowingsController : ControllerBase
         return Ok(borrowing);
     }
 
+    [Authorize]
     [HttpPost("borrow")]
     public async Task<IActionResult> Borrow(Borrowing borrowing)
     {
@@ -53,6 +55,7 @@ public class BorrowingsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("return/{id}")]
     public async Task<IActionResult> Return(string id)
     {
