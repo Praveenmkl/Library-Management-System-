@@ -99,6 +99,11 @@ export const routes: Routes = [
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/borrowings/borrowings.component').then(m => m.BorrowingsComponent)
   },
+  {
+    path: 'staff/reports',
+    canActivate: [librarianGuard],
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
 
   // Legacy librarian/* redirects (backwards compatibility)
   { path: 'librarian', redirectTo: 'staff/dashboard', pathMatch: 'full' },

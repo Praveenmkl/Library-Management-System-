@@ -37,7 +37,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
           <p class="text-sm text-muted-foreground mt-0.5">Track book loans, due dates, returns, and calculated fines</p>
         </div>
         <button
-          *ngIf="authService.isAuthenticated()"
+          *ngIf="authService.canManageBooks()"
           hlmBtn
           variant="default"
           (click)="openIssueModal()"
@@ -250,10 +250,14 @@ export class BorrowingsComponent implements OnInit {
   filteredBorrowings = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
     const status = this.filterStatus();
+    const user = this.authService.currentUser();
+    const isStudent = this.authService.isStudent();
+
     return this.borrowingService.borrowings().filter(b => {
+      const matchesUser = !isStudent || (user && (b.memberId.toLowerCase() === user.username.toLowerCase() || b.memberId.toLowerCase() === (user.email || '').toLowerCase() || b.memberId.toLowerCase().includes('student')));
       const matchesSearch = !term || b.bookId.toLowerCase().includes(term) || b.memberId.toLowerCase().includes(term);
       const matchesStatus = !status || b.status === status;
-      return matchesSearch && matchesStatus;
+      return matchesUser && matchesSearch && matchesStatus;
     });
   });
 

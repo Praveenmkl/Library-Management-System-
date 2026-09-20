@@ -35,7 +35,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
           <p class="text-sm text-muted-foreground mt-0.5">Manage library memberships and contact records</p>
         </div>
         <button
-          *ngIf="authService.isAuthenticated()"
+          *ngIf="authService.canManageStudents()"
           hlmBtn
           variant="default"
           (click)="openAddModal()"
@@ -72,7 +72,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                 <th class="py-4 px-4 font-semibold">Phone</th>
                 <th class="py-4 px-4 font-semibold">Address</th>
                 <th class="py-4 px-4 font-semibold text-center">Status</th>
-                <th *ngIf="authService.isAuthenticated()" class="py-4 px-6 font-semibold text-right">Actions</th>
+                <th *ngIf="authService.canManageStudents()" class="py-4 px-6 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
@@ -100,7 +100,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                     {{ member.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
-                <td *ngIf="authService.isAuthenticated()" class="py-4 px-6 text-right space-x-2">
+                <td *ngIf="authService.canManageStudents()" class="py-4 px-6 text-right space-x-2">
                   <button
                     hlmBtn
                     variant="ghost"
@@ -111,6 +111,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                     <ng-icon name="lucidePencil" class="text-sm"></ng-icon>
                   </button>
                   <button
+                    *ngIf="authService.isAdmin()"
                     hlmBtn
                     variant="ghost"
                     size="icon"

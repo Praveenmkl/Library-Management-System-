@@ -26,6 +26,14 @@ export class AuthService {
     return role === 'student' || role === 'member';
   });
 
+  // Role Permission Computed Flags
+  readonly canManageBooks = computed(() => this.isAdmin() || this.isLibrarian());
+  readonly canManageStudents = computed(() => this.isAdmin() || this.isLibrarian());
+  readonly canCreateLibrarians = computed(() => this.isAdmin());
+  readonly canChangeUserRoles = computed(() => this.isAdmin());
+  readonly canManageSystemSettings = computed(() => this.isAdmin());
+  readonly canViewReports = computed(() => this.isAdmin() || this.isLibrarian());
+
   private loadUserFromStorage(): { username: string; role: string; email?: string; fullName?: string } | null {
     const saved = localStorage.getItem('lms_user');
     if (!saved) {
@@ -36,6 +44,18 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  updateCurrentUserProfile(data: { fullName?: string; email?: string }) {
+    const current = this.currentUserSignal();
+    if (!current) return;
+    const updated = {
+      ...current,
+      fullName: data.fullName || current.fullName,
+      email: data.email || current.email
+    };
+    localStorage.setItem('lms_user', JSON.stringify(updated));
+    this.currentUserSignal.set(updated);
   }
 
   register(userDto: UserDto): Observable<AuthResponse> {

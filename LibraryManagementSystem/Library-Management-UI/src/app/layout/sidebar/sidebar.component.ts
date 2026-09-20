@@ -168,6 +168,15 @@ import {
               <ng-icon name="lucideDollarSign" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Manage Fines</span>
             </a>
+
+            <a
+              routerLink="/staff/reports"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
+            >
+              <ng-icon name="lucideFileText" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
+              <span>Library Reports</span>
+            </a>
           </ng-container>
 
           <!-- ADMIN NAVIGATION -->

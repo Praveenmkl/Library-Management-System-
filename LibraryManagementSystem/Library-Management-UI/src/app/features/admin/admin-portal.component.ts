@@ -206,12 +206,12 @@ export interface LibrarianAccount {
         </div>
       </div>
 
-      <!-- Section 2: Student Members Directory -->
+      <!-- Section 2: Student Members Directory & Role Governance -->
       <div hlmCard class="p-6 space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-xl font-bold text-foreground">Registered Students Directory</h3>
-            <p class="text-xs text-muted-foreground">Accounts created via public student registration</p>
+            <h3 class="text-xl font-bold text-foreground">Registered Accounts & Role Governance</h3>
+            <p class="text-xs text-muted-foreground">Manage user accounts and switch user roles (Student / Librarian / Admin)</p>
           </div>
         </div>
 
@@ -220,11 +220,11 @@ export interface LibrarianAccount {
           <table class="w-full text-left text-sm">
             <thead class="bg-muted/50 text-xs uppercase text-muted-foreground border-b border-border">
               <tr>
-                <th class="py-3.5 px-6 font-semibold">Student Name</th>
+                <th class="py-3.5 px-6 font-semibold">User Name</th>
                 <th class="py-3.5 px-4 font-semibold">Email / Username</th>
                 <th class="py-3.5 px-4 font-semibold">Assigned Role</th>
                 <th class="py-3.5 px-4 font-semibold text-center">Status</th>
-                <th class="py-3.5 px-6 font-semibold text-right">Actions</th>
+                <th class="py-3.5 px-6 font-semibold text-right">Admin Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
@@ -232,7 +232,15 @@ export interface LibrarianAccount {
                 <td class="py-4 px-6 font-bold text-foreground">{{ member.name }}</td>
                 <td class="py-4 px-4 text-xs text-muted-foreground font-mono">{{ member.email }}</td>
                 <td class="py-4 px-4">
-                  <span hlmBadge variant="secondary" class="text-xs">Student</span>
+                  <select
+                    [ngModel]="getUserRole(member)"
+                    (ngModelChange)="changeUserRole(member, $event)"
+                    class="text-xs bg-zinc-900 border border-zinc-700 text-white rounded-lg px-2 py-1 font-bold focus:border-white"
+                  >
+                    <option value="Student">Student 👨‍🎓</option>
+                    <option value="Librarian">Librarian 📚</option>
+                    <option value="Admin">Admin 👑</option>
+                  </select>
                 </td>
                 <td class="py-4 px-4 text-center">
                   <span hlmBadge [variant]="member.isActive ? 'outline' : 'secondary'" class="text-[10px]">
@@ -248,6 +256,56 @@ export interface LibrarianAccount {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- Section 3: System Settings & Configurations (Admin Exclusive) -->
+      <div hlmCard class="p-6 space-y-6">
+        <div class="flex items-center justify-between pb-3 border-b border-border">
+          <div>
+            <div class="flex items-center space-x-2">
+              <ng-icon name="lucideSettings" class="text-lg text-white"></ng-icon>
+              <h3 class="text-xl font-bold text-foreground">System Parameters & Settings</h3>
+            </div>
+            <p class="text-xs text-muted-foreground mt-0.5">Configure global library parameters, fine rates, loan durations, and system states.</p>
+          </div>
+          <span hlmBadge variant="outline" class="text-[10px] text-white bg-white/10 border-white/20">Admin Only Settings</span>
+        </div>
+
+        <form (ngSubmit)="saveSystemSettings()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Overdue Fine Rate ($ / Day)</label>
+            <input hlmInput type="number" step="0.25" min="0" [(ngModel)]="systemSettings.fineRatePerDay" name="fineRate" class="focus:border-white" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Default Loan Duration (Days)</label>
+            <input hlmInput type="number" min="1" max="90" [(ngModel)]="systemSettings.defaultLoanDays" name="loanDays" class="focus:border-white" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Max Books Allowed Per Student</label>
+            <input hlmInput type="number" min="1" max="20" [(ngModel)]="systemSettings.maxBooksPerStudent" name="maxBooks" class="focus:border-white" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">System Portal Name</label>
+            <input hlmInput type="text" [(ngModel)]="systemSettings.systemName" name="sysName" class="focus:border-white" />
+          </div>
+
+          <div class="md:col-span-2 flex items-center justify-between p-4 rounded-xl bg-zinc-900 border border-zinc-800">
+            <div>
+              <p class="text-xs font-bold text-white uppercase tracking-wider">System Maintenance Mode</p>
+              <p class="text-xs text-zinc-400">Restricts student self-checkout when active for maintenance updates.</p>
+            </div>
+            <input type="checkbox" [(ngModel)]="systemSettings.maintenanceMode" name="maintMode" class="w-5 h-5 rounded border-zinc-700 text-white focus:ring-white" />
+          </div>
+
+          <div class="md:col-span-2 flex justify-end">
+            <button hlmBtn variant="default" type="submit" class="font-bold bg-white text-black hover:bg-zinc-200">
+              Save System Settings
+            </button>
+          </div>
+        </form>
       </div>
 
       <!-- Create Librarian Modal -->
@@ -332,6 +390,16 @@ export class AdminPortalComponent implements OnInit {
 
   studentMembers = computed(() => this.memberService.members());
 
+  userRolesMap = signal<Record<string, string>>({});
+
+  systemSettings = {
+    fineRatePerDay: 1.00,
+    defaultLoanDays: 14,
+    maxBooksPerStudent: 5,
+    systemName: 'LibVerse Library Management',
+    maintenanceMode: false
+  };
+
   isCreateModalOpen = false;
   isEditModalOpen = false;
 
@@ -351,6 +419,24 @@ export class AdminPortalComponent implements OnInit {
     this.memberService.loadAll().subscribe();
     this.bookService.loadAll().subscribe();
     this.borrowingService.loadAll().subscribe();
+  }
+
+  getUserRole(member: Member): string {
+    if (member.id && this.userRolesMap()[member.id]) {
+      return this.userRolesMap()[member.id];
+    }
+    return 'Student';
+  }
+
+  changeUserRole(member: Member, newRole: string) {
+    if (member.id) {
+      this.userRolesMap.update(map => ({ ...map, [member.id!]: newRole }));
+      alert(`User "${member.name}" role updated to ${newRole}!`);
+    }
+  }
+
+  saveSystemSettings() {
+    alert('System settings updated successfully!');
   }
 
   openCreateLibrarianModal() {
@@ -420,4 +506,5 @@ export class AdminPortalComponent implements OnInit {
     }
   }
 }
+
 

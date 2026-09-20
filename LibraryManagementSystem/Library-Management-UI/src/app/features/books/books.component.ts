@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../core/services/book.service';
 import { AuthService } from '../../core/services/auth.service';
+import { BorrowingService } from '../../core/services/borrowing.service';
 import { Book } from '../../core/models/book.model';
 import { HlmButtonDirective } from '../../shared/spartan/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/spartan/input/hlm-input.directive';
@@ -10,7 +11,7 @@ import { HlmBadgeDirective } from '../../shared/spartan/badge/hlm-badge.directiv
 import { HlmCardDirective } from '../../shared/spartan/card/hlm-card.directive';
 import { SpartanDialogComponent } from '../../shared/spartan/dialog/spartan-dialog.component';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
-import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, lucideLayers } from '@ng-icons/lucide';
+import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, lucideLayers, lucideEye, lucideSend } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-books',
@@ -25,17 +26,18 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
     SpartanDialogComponent,
     NgIconComponent
   ],
-  providers: [provideIcons({ lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, lucideLayers })],
+  providers: [provideIcons({ lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, lucideLayers, lucideEye, lucideSend })],
   template: `
     <div class="space-y-6 animate-in fade-in duration-300">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl font-extrabold text-foreground tracking-tight">Books Catalog</h1>
-          <p class="text-sm text-muted-foreground mt-0.5">Browse, search, and manage library inventory</p>
+          <p class="text-sm text-muted-foreground mt-0.5">Browse, search, and view library inventory</p>
         </div>
+        <!-- Only Librarians & Admins can add books -->
         <button
-          *ngIf="authService.isAuthenticated()"
+          *ngIf="authService.canManageBooks()"
           hlmBtn
           variant="default"
           (click)="openAddModal()"
@@ -95,7 +97,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
                 <th class="py-4 px-4 font-semibold text-center">Total Copies</th>
                 <th class="py-4 px-4 font-semibold text-center">Available</th>
                 <th class="py-4 px-4 font-semibold text-center">Status</th>
-                <th *ngIf="authService.isAuthenticated()" class="py-4 px-6 font-semibold text-right">Actions</th>
+                <th class="py-4 px-6 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
@@ -114,29 +116,62 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
                 <td class="py-4 px-4 text-center font-bold" [class.text-white]="book.availableCopies > 0" [class.text-zinc-500]="book.availableCopies === 0">
                   {{ book.availableCopies }} / {{ book.totalCopies }}
                 </td>
-                <td *ngIf="authService.isAuthenticated()" class="py-4 px-6 text-right space-x-2">
+                <td class="py-4 px-4 text-center">
+                  <span hlmBadge [variant]="book.availableCopies > 0 ? 'outline' : 'secondary'" class="text-[10px] font-bold {{ book.availableCopies > 0 ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400' }}">
+                    {{ book.availableCopies > 0 ? 'In Stock' : 'Out of Stock' }}
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-right space-x-2">
+                  <!-- View Details Modal Trigger for all users -->
                   <button
                     hlmBtn
                     variant="ghost"
-                    size="icon"
-                    (click)="openEditModal(book)"
-                    class="h-8 w-8 text-zinc-400 hover:text-brand-300 hover:bg-brand-500/10"
+                    size="sm"
+                    (click)="openDetailsModal(book)"
+                    class="text-xs text-zinc-300 hover:text-white hover:bg-zinc-800"
                   >
-                    <ng-icon name="lucidePencil" class="text-sm"></ng-icon>
+                    <ng-icon name="lucideEye" class="mr-1 text-xs"></ng-icon>
+                    Details
                   </button>
+
+                  <!-- Borrow Button for Students -->
                   <button
+                    *ngIf="authService.isStudent()"
                     hlmBtn
-                    variant="ghost"
-                    size="icon"
-                    (click)="deleteBook(book.id!)"
-                    class="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
+                    size="sm"
+                    [disabled]="book.availableCopies <= 0"
+                    (click)="borrowBook(book)"
+                    class="text-xs font-bold {{ book.availableCopies > 0 ? '!bg-brand-500 text-black hover:!bg-brand-400' : 'bg-zinc-800 text-zinc-500' }}"
                   >
-                    <ng-icon name="lucideTrash2" class="text-sm"></ng-icon>
+                    <ng-icon name="lucideSend" class="mr-1 text-xs"></ng-icon>
+                    Borrow
                   </button>
+
+                  <!-- Edit & Delete Buttons for Librarians & Admins ONLY -->
+                  <ng-container *ngIf="authService.canManageBooks()">
+                    <button
+                      hlmBtn
+                      variant="ghost"
+                      size="icon"
+                      (click)="openEditModal(book)"
+                      class="h-8 w-8 text-zinc-400 hover:text-brand-300 hover:bg-brand-500/10"
+                    >
+                      <ng-icon name="lucidePencil" class="text-sm"></ng-icon>
+                    </button>
+                    <button
+                      hlmBtn
+                      variant="ghost"
+                      size="icon"
+                      (click)="deleteBook(book.id!)"
+                      class="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
+                    >
+                      <ng-icon name="lucideTrash2" class="text-sm"></ng-icon>
+                    </button>
+                  </ng-container>
                 </td>
               </tr>
               <tr *ngIf="filteredBooks().length === 0">
-                <td [attr.colspan]="authService.isAuthenticated() ? 7 : 6" class="py-12 text-center text-muted-foreground">
+                <td colspan="7" class="py-12 text-center text-muted-foreground">
                   <ng-icon name="lucideBookOpen" class="text-3xl text-brand-500/30 mb-2"></ng-icon>
                   <p class="text-sm">No books matching your criteria.</p>
                 </td>
@@ -146,7 +181,53 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
         </div>
       </div>
 
-      <!-- Add/Edit Book Modal Dialog -->
+      <!-- View Book Details Dialog Modal -->
+      <app-spartan-dialog
+        [(isOpen)]="isDetailsModalOpen"
+        [title]="selectedBookDetails?.title || 'Book Details'"
+        description="Comprehensive information and availability status for this title."
+      >
+        <div *ngIf="selectedBookDetails" class="space-y-4 text-sm">
+          <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2">
+            <div class="flex justify-between">
+              <span class="text-zinc-400">Author:</span>
+              <span class="font-bold text-white">{{ selectedBookDetails.author }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-zinc-400">Category / Genre:</span>
+              <span class="font-bold text-brand-400">{{ selectedBookDetails.category || 'General' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-zinc-400">ISBN Code:</span>
+              <span class="font-mono text-zinc-300">{{ selectedBookDetails.isbn }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-zinc-400">Total Copies:</span>
+              <span class="font-bold text-white">{{ selectedBookDetails.totalCopies }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-zinc-400">Available Copies:</span>
+              <span class="font-bold text-emerald-400">{{ selectedBookDetails.availableCopies }}</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button
+              *ngIf="authService.isStudent() && selectedBookDetails.availableCopies > 0"
+              hlmBtn
+              variant="default"
+              (click)="borrowBook(selectedBookDetails); isDetailsModalOpen = false"
+              class="font-bold bg-brand-500 text-black hover:bg-brand-400"
+            >
+              <ng-icon name="lucideSend" class="mr-2 text-sm"></ng-icon>
+              Borrow This Book Now
+            </button>
+            <button hlmBtn variant="outline" class="ml-auto" (click)="isDetailsModalOpen = false">Close</button>
+          </div>
+        </div>
+      </app-spartan-dialog>
+
+      <!-- Add/Edit Book Modal Dialog (Librarian/Admin Only) -->
       <app-spartan-dialog
         [(isOpen)]="isModalOpen"
         [title]="isEditMode ? 'Edit Book Record' : 'Add New Book to Inventory'"
@@ -200,6 +281,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
 })
 export class BooksComponent implements OnInit {
   bookService = inject(BookService);
+  borrowingService = inject(BorrowingService);
   authService = inject(AuthService);
 
   searchTerm = signal('');
@@ -207,6 +289,8 @@ export class BooksComponent implements OnInit {
 
   isModalOpen = false;
   isEditMode = false;
+  isDetailsModalOpen = false;
+  selectedBookDetails: Book | null = null;
 
   currentBook: Book = {
     title: '',
@@ -240,7 +324,33 @@ export class BooksComponent implements OnInit {
     this.bookService.loadAll().subscribe();
   }
 
+  openDetailsModal(book: Book) {
+    this.selectedBookDetails = book;
+    this.isDetailsModalOpen = true;
+  }
+
+  borrowBook(book: Book) {
+    if (confirm(`Borrow a copy of "${book.title}"?`)) {
+      const d = new Date();
+      d.setDate(d.getDate() + 14);
+      this.borrowingService.borrowBook({
+        bookId: book.id || '',
+        memberId: this.authService.currentUser()?.username || 'student_demo',
+        dueDate: d.toISOString(),
+        status: 'Borrowed',
+        fineAmount: 0
+      }).subscribe({
+        next: () => {
+          alert(`Successfully borrowed "${book.title}"!`);
+          this.bookService.loadAll().subscribe();
+        },
+        error: (err) => alert(err.error?.message || 'Failed to borrow book')
+      });
+    }
+  }
+
   openAddModal() {
+    if (!this.authService.canManageBooks()) return;
     this.isEditMode = false;
     this.currentBook = {
       title: '',
@@ -254,12 +364,14 @@ export class BooksComponent implements OnInit {
   }
 
   openEditModal(book: Book) {
+    if (!this.authService.canManageBooks()) return;
     this.isEditMode = true;
     this.currentBook = { ...book };
     this.isModalOpen = true;
   }
 
   saveBook() {
+    if (!this.authService.canManageBooks()) return;
     if (this.isEditMode && this.currentBook.id) {
       this.bookService.update(this.currentBook.id, this.currentBook).subscribe(() => {
         this.isModalOpen = false;
@@ -272,9 +384,11 @@ export class BooksComponent implements OnInit {
   }
 
   deleteBook(id: string) {
+    if (!this.authService.canManageBooks()) return;
     if (confirm('Are you sure you want to delete this book?')) {
       this.bookService.delete(id).subscribe();
     }
   }
 }
+
 

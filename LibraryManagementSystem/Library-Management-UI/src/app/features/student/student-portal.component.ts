@@ -210,10 +210,9 @@ import {
               </div>
 
               <div class="pt-3 border-t border-border/40 flex items-center justify-between text-xs">
-                <span class="text-muted-foreground flex items-center">
-                  <ng-icon name="lucideClock" class="mr-1 text-brand-400"></ng-icon>
-                  Borrowed: {{ item.borrowedAt | date:'shortDate' }}
-                </span>
+                <button hlmBtn variant="outline" size="sm" (click)="returnBook(item.id!)" class="text-xs text-brand-300 border-brand-500/30 hover:bg-brand-500/15 font-bold">
+                  Return Book
+                </button>
                 <button hlmBtn variant="ghost" size="sm" (click)="requestRenewal(item.id!)" class="text-xs text-brand-400 hover:text-brand-300 font-bold">
                   Request Renewal
                 </button>
@@ -332,6 +331,10 @@ export class StudentPortalComponent implements OnInit {
   }
 
   saveProfile() {
+    this.authService.updateCurrentUserProfile({
+      fullName: this.studentProfile.fullName,
+      email: this.studentProfile.email
+    });
     alert('Student profile updated successfully!');
   }
 
@@ -356,6 +359,18 @@ export class StudentPortalComponent implements OnInit {
           this.bookService.loadAll().subscribe();
         },
         error: (err) => alert(err.error?.message || 'Failed to reserve book')
+      });
+    }
+  }
+
+  returnBook(id: string) {
+    if (confirm('Return this borrowed book now?')) {
+      this.borrowingService.returnBook(id).subscribe({
+        next: () => {
+          alert('Book returned successfully!');
+          this.bookService.loadAll().subscribe();
+        },
+        error: (err) => alert(err.error?.message || 'Failed to return book')
       });
     }
   }
