@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
 import { HeaderComponent } from './layout/header/header.component';
 import { AuthService } from './core/services/auth.service';
@@ -25,13 +26,53 @@ import { AuthService } from './core/services/auth.service';
     </div>
   `
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private router = inject(Router);
   authService = inject(AuthService);
 
+  constructor() {
+    // React to user login/role changes
+    effect(() => {
+      const user = this.authService.currentUser();
+      this.updateTheme(this.router.url, user?.role);
+    });
+  }
+
+  ngOnInit() {
+    // React to navigation route changes
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.updateTheme(event.urlAfterRedirects || event.url, this.authService.currentUser()?.role);
+    });
+
+    // Initial theme update
+    this.updateTheme(window.location.pathname, this.authService.currentUser()?.role);
+  }
+
+  private updateTheme(url: string, role?: string) {
+    let theme = 'student'; // Default to student orange theme
+
+    const lowerUrl = (url || '').toLowerCase();
+    const lowerRole = (role || '').toLowerCase();
+
+    if (lowerUrl.includes('/staff') || lowerUrl.includes('/librarian') || lowerRole === 'librarian') {
+      theme = 'librarian';
+    } else if (lowerUrl.includes('/admin') || lowerRole === 'admin') {
+      theme = 'admin';
+    } else if (lowerUrl.includes('/student') || lowerRole === 'student' || lowerRole === 'member') {
+      theme = 'student';
+    }
+
+    // Apply to html element and document body
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.classList.remove('theme-student', 'theme-librarian', 'theme-admin');
+    document.body.classList.add(`theme-${theme}`);
+  }
+
   showNavigation(): boolean {
     const url = this.router.url;
-    const isAuthPage = url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/admin/login');
+    const isAuthPage = url.includes('/student/login') || url.includes('/student/register') || url.includes('/staff/login') || url.includes('/admin/login');
     return this.authService.isAuthenticated() && !isAuthPage;
   }
 }

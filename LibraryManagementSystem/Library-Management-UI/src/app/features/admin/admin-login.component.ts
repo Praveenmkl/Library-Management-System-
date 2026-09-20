@@ -102,7 +102,7 @@ import { lucideShield, lucideLock, lucideUser, lucideArrowRight } from '@ng-icon
 
             <div class="text-center text-xs text-muted-foreground pt-4 border-t border-zinc-800">
               Not an Administrator?
-              <a routerLink="/auth/login" class="text-white font-semibold hover:underline ml-1">Student & Staff Sign In</a>
+              <a routerLink="/student/login" class="text-white font-semibold hover:underline ml-1">Student & Staff Sign In</a>
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
           hlmBtn
           variant="default"
           (click)="openIssueModal()"
-          class="shadow-lg shadow-orange-500/30"
+          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
         >
           <ng-icon name="lucidePlus" class="mr-2 text-base"></ng-icon>
           Issue Book Loan
@@ -49,16 +49,16 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
       </div>
 
       <!-- Filters & Search Bar -->
-      <div hlmCard class="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div hlmCard class="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-brand-500/20">
         <div class="relative w-full sm:w-96">
-          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-muted-foreground text-base"></ng-icon>
+          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-brand-400/50 text-base"></ng-icon>
           <input
             hlmInput
             type="text"
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
             placeholder="Search by Book ID or Member ID..."
-            class="pl-10"
+            class="pl-10 focus:border-brand-500/50"
           />
         </div>
 
@@ -68,7 +68,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === '' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('')"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === '' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             All Loans
           </button>
@@ -77,7 +77,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Borrowed' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Borrowed')"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Borrowed' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             Active
           </button>
@@ -86,7 +86,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Returned' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Returned')"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Returned' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             Returned
           </button>
@@ -95,7 +95,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Overdue' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Overdue')"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Overdue' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             Overdue
           </button>
@@ -103,7 +103,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
       </div>
 
       <!-- Data Table -->
-      <div hlmCard class="p-0 overflow-hidden shadow-xl border-border">
+      <div hlmCard class="p-0 overflow-hidden shadow-xl border border-brand-500/20">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-muted/50 text-xs uppercase text-muted-foreground border-b border-border">
@@ -118,7 +118,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
-              <tr *ngFor="let item of filteredBorrowings()" class="hover:bg-muted/20 transition-colors">
+              <tr *ngFor="let item of filteredBorrowings()" class="hover:bg-brand-500/5 transition-colors">
                 <td class="py-4 px-6">
                   <div class="font-bold text-foreground">{{ getBookTitle(item.bookId) }}</div>
                   <div class="text-[11px] font-mono text-muted-foreground">ID: {{ item.bookId }}</div>
@@ -135,7 +135,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
                   <span
                     hlmBadge
                     [variant]="item.status === 'Returned' ? 'secondary' : 'outline'"
-                    class="text-[10px]"
+                    class="text-[10px] font-bold {{ item.status === 'Overdue' ? 'text-red-400 border-red-500/30' : (item.status === 'Returned' ? 'text-emerald-400 border-emerald-500/30' : 'border-brand-500/30 text-brand-300 bg-brand-500/10') }}"
                   >
                     {{ item.status }}
                   </span>
@@ -150,7 +150,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
                     variant="outline"
                     size="sm"
                     (click)="returnBook(item.id!)"
-                    class="text-xs text-white border-white/20 hover:bg-white/10"
+                    class="text-xs text-brand-300 border-brand-500/30 hover:bg-brand-500/15"
                   >
                     <ng-icon name="lucideRotateCcw" class="mr-1.5 text-xs"></ng-icon>
                     Return Book
@@ -160,7 +160,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
               </tr>
               <tr *ngIf="filteredBorrowings().length === 0">
                 <td [attr.colspan]="authService.isAuthenticated() ? 7 : 6" class="py-12 text-center text-muted-foreground">
-                  <ng-icon name="lucideBookmarkCheck" class="text-3xl text-muted-foreground/40 mb-2"></ng-icon>
+                  <ng-icon name="lucideBookmarkCheck" class="text-3xl text-brand-500/30 mb-2"></ng-icon>
                   <p class="text-sm">No borrowing transactions recorded.</p>
                 </td>
               </tr>
@@ -183,7 +183,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
               [(ngModel)]="newBorrowing.bookId"
               name="bookId"
               required
-              class="appearance-none bg-background/50"
+              class="appearance-none bg-background/50 focus:border-brand-500/60"
             >
               <option value="" disabled>-- Choose Available Book --</option>
               <option *ngFor="let b of availableBooks()" [value]="b.id">
@@ -199,7 +199,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
               [(ngModel)]="newBorrowing.memberId"
               name="memberId"
               required
-              class="appearance-none bg-background/50"
+              class="appearance-none bg-background/50 focus:border-brand-500/60"
             >
               <option value="" disabled>-- Choose Member --</option>
               <option *ngFor="let m of activeMembersList()" [value]="m.id">
@@ -210,12 +210,12 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
 
           <div class="space-y-1.5">
             <label class="text-xs font-semibold text-foreground">Due Date</label>
-            <input hlmInput type="date" [(ngModel)]="dueDateInput" name="dueDate" required />
+            <input hlmInput type="date" [(ngModel)]="dueDateInput" name="dueDate" required class="focus:border-brand-500/60" />
           </div>
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="shadow-lg shadow-orange-500/30">
+            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
               Issue Loan
             </button>
           </div>
@@ -324,3 +324,4 @@ export class BorrowingsComponent implements OnInit {
     }
   }
 }
+

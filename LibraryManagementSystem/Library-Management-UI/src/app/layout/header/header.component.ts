@@ -34,12 +34,7 @@ import { lucideSun, lucideMoon, lucideBell, lucideCircleCheck, lucideLogOut } fr
           <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary"></span>
         </button>
 
-        <div class="h-4 w-px bg-border my-auto"></div>
 
-        <button hlmBtn variant="outline" size="sm" (click)="authService.logout()" class="text-xs">
-          <ng-icon name="lucideLogOut" class="mr-1 text-sm"></ng-icon>
-          Sign Out
-        </button>
       </div>
     </header>
   `

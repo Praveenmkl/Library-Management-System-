@@ -19,7 +19,7 @@ export const librarianGuard: CanActivateFn = () => {
   if (authService.isAuthenticated() && (authService.isLibrarian() || authService.isAdmin())) {
     return true;
   }
-  return router.createUrlTree(['/auth/login']);
+  return router.createUrlTree(['/staff/login']);
 };
 
 export const studentGuard: CanActivateFn = () => {
@@ -29,5 +29,5 @@ export const studentGuard: CanActivateFn = () => {
   if (authService.isAuthenticated() && (authService.isStudent() || authService.isAdmin())) {
     return true;
   }
-  return router.createUrlTree(['/auth/login']);
+  return router.createUrlTree(['/student/login']);
 };

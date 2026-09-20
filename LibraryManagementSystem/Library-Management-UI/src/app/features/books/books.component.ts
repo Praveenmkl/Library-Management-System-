@@ -39,7 +39,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
           hlmBtn
           variant="default"
           (click)="openAddModal()"
-          class="shadow-lg shadow-orange-500/30"
+          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
         >
           <ng-icon name="lucidePlus" class="mr-2 text-base"></ng-icon>
           Add New Book
@@ -47,16 +47,16 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
       </div>
 
       <!-- Filters & Search Bar -->
-      <div hlmCard class="p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div hlmCard class="p-4 flex flex-col md:flex-row items-center justify-between gap-4 border border-brand-500/20">
         <div class="relative w-full md:w-96">
-          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-muted-foreground text-base"></ng-icon>
+          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-brand-400/50 text-base"></ng-icon>
           <input
             hlmInput
             type="text"
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
             placeholder="Search by Title, Author, or ISBN..."
-            class="pl-10"
+            class="pl-10 focus:border-brand-500/50"
           />
         </div>
 
@@ -66,7 +66,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
             [variant]="selectedCategory() === '' ? 'default' : 'outline'"
             size="sm"
             (click)="selectedCategory.set('')"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ selectedCategory() === '' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             All Genres
           </button>
@@ -76,7 +76,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
             [variant]="selectedCategory() === cat ? 'default' : 'outline'"
             size="sm"
             (click)="selectedCategory.set(cat)"
-            class="text-xs rounded-full"
+            class="text-xs rounded-full font-bold transition-all {{ selectedCategory() === cat ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
           >
             {{ cat }}
           </button>
@@ -84,7 +84,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
       </div>
 
       <!-- Data Table -->
-      <div hlmCard class="p-0 overflow-hidden shadow-xl border-border">
+      <div hlmCard class="p-0 overflow-hidden shadow-xl border border-brand-500/20">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-muted/50 text-xs uppercase text-muted-foreground border-b border-border">
@@ -99,14 +99,14 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
-              <tr *ngFor="let book of filteredBooks()" class="hover:bg-muted/20 transition-colors">
+              <tr *ngFor="let book of filteredBooks()" class="hover:bg-brand-500/5 transition-colors">
                 <td class="py-4 px-6">
                   <div class="font-bold text-foreground">{{ book.title }}</div>
                   <div class="text-xs text-muted-foreground">by {{ book.author }}</div>
                 </td>
                 <td class="py-4 px-4 font-mono text-xs text-muted-foreground">{{ book.isbn }}</td>
                 <td class="py-4 px-4">
-                  <span hlmBadge variant="outline" class="text-xs">
+                  <span hlmBadge variant="outline" class="text-[10px] text-brand-300 border-brand-500/30 bg-brand-500/10">
                     {{ book.category || 'General' }}
                   </span>
                 </td>
@@ -120,7 +120,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
                     variant="ghost"
                     size="icon"
                     (click)="openEditModal(book)"
-                    class="h-8 w-8"
+                    class="h-8 w-8 text-zinc-400 hover:text-brand-300 hover:bg-brand-500/10"
                   >
                     <ng-icon name="lucidePencil" class="text-sm"></ng-icon>
                   </button>
@@ -129,7 +129,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
                     variant="ghost"
                     size="icon"
                     (click)="deleteBook(book.id!)"
-                    class="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10"
+                    class="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
                   >
                     <ng-icon name="lucideTrash2" class="text-sm"></ng-icon>
                   </button>
@@ -137,7 +137,7 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
               </tr>
               <tr *ngIf="filteredBooks().length === 0">
                 <td [attr.colspan]="authService.isAuthenticated() ? 7 : 6" class="py-12 text-center text-muted-foreground">
-                  <ng-icon name="lucideBookOpen" class="text-3xl text-muted-foreground/40 mb-2"></ng-icon>
+                  <ng-icon name="lucideBookOpen" class="text-3xl text-brand-500/30 mb-2"></ng-icon>
                   <p class="text-sm">No books matching your criteria.</p>
                 </td>
               </tr>
@@ -155,41 +155,41 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
         <form (ngSubmit)="saveBook()" class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-xs font-semibold text-foreground">Title</label>
-            <input hlmInput type="text" [(ngModel)]="currentBook.title" name="title" required placeholder="e.g. Clean Architecture" />
+            <input hlmInput type="text" [(ngModel)]="currentBook.title" name="title" required placeholder="e.g. Clean Architecture" class="focus:border-brand-500/60" />
           </div>
 
           <div class="space-y-1.5">
             <label class="text-xs font-semibold text-foreground">Author</label>
-            <input hlmInput type="text" [(ngModel)]="currentBook.author" name="author" required placeholder="e.g. Robert C. Martin" />
+            <input hlmInput type="text" [(ngModel)]="currentBook.author" name="author" required placeholder="e.g. Robert C. Martin" class="focus:border-brand-500/60" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">ISBN</label>
-              <input hlmInput type="text" [(ngModel)]="currentBook.isbn" name="isbn" required placeholder="978-0134494166" />
+              <input hlmInput type="text" [(ngModel)]="currentBook.isbn" name="isbn" required placeholder="978-0134494166" class="focus:border-brand-500/60" />
             </div>
 
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">Category / Genre</label>
-              <input hlmInput type="text" [(ngModel)]="currentBook.category" name="category" required placeholder="Software Engineering" />
+              <input hlmInput type="text" [(ngModel)]="currentBook.category" name="category" required placeholder="Software Engineering" class="focus:border-brand-500/60" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">Total Copies</label>
-              <input hlmInput type="number" [(ngModel)]="currentBook.totalCopies" name="totalCopies" min="1" required />
+              <input hlmInput type="number" [(ngModel)]="currentBook.totalCopies" name="totalCopies" min="1" required class="focus:border-brand-500/60" />
             </div>
 
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">Available Copies</label>
-              <input hlmInput type="number" [(ngModel)]="currentBook.availableCopies" name="availableCopies" min="0" required />
+              <input hlmInput type="number" [(ngModel)]="currentBook.availableCopies" name="availableCopies" min="0" required class="focus:border-brand-500/60" />
             </div>
           </div>
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="shadow-lg shadow-orange-500/30">
+            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
               {{ isEditMode ? 'Save Changes' : 'Add Book' }}
             </button>
           </div>
@@ -277,3 +277,4 @@ export class BooksComponent implements OnInit {
     }
   }
 }
+

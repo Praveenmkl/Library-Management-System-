@@ -39,7 +39,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
           hlmBtn
           variant="default"
           (click)="openAddModal()"
-          class="shadow-lg shadow-orange-500/30"
+          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
         >
           <ng-icon name="lucideUserPlus" class="mr-2 text-base"></ng-icon>
           Register Member
@@ -47,22 +47,22 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
       </div>
 
       <!-- Search & Filter Bar -->
-      <div hlmCard class="p-4 flex items-center justify-between">
+      <div hlmCard class="p-4 flex items-center justify-between border border-brand-500/20">
         <div class="relative w-full md:w-96">
-          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-muted-foreground text-base"></ng-icon>
+          <ng-icon name="lucideSearch" class="absolute left-3 top-3 text-brand-400/50 text-base"></ng-icon>
           <input
             hlmInput
             type="text"
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
             placeholder="Search member by Name, Email, or Phone..."
-            class="pl-10"
+            class="pl-10 focus:border-brand-500/50"
           />
         </div>
       </div>
 
       <!-- Data Table -->
-      <div hlmCard class="p-0 overflow-hidden shadow-xl border-border">
+      <div hlmCard class="p-0 overflow-hidden shadow-xl border border-brand-500/20">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-muted/50 text-xs uppercase text-muted-foreground border-b border-border">
@@ -76,15 +76,15 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
-              <tr *ngFor="let member of filteredMembers()" class="hover:bg-muted/20 transition-colors">
+              <tr *ngFor="let member of filteredMembers()" class="hover:bg-brand-500/5 transition-colors">
                 <td class="py-4 px-6">
                   <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white font-bold text-sm">
+                    <div class="w-9 h-9 rounded-full !bg-gradient-to-br !from-brand-500 !to-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-brand-500/20">
                       {{ member.name.charAt(0).toUpperCase() }}
                     </div>
                     <div>
                       <div class="font-bold text-foreground">{{ member.name }}</div>
-                      <div class="text-[11px] text-muted-foreground font-mono">ID: {{ member.id }}</div>
+                      <div class="text-[11px] font-mono text-muted-foreground">ID: {{ member.id }}</div>
                     </div>
                   </div>
                 </td>
@@ -94,8 +94,8 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                 <td class="py-4 px-4 text-center">
                   <span
                     hlmBadge
-                    [variant]="member.isActive ? 'success' : 'destructive'"
-                    class="text-[10px]"
+                    variant="outline"
+                    class="text-[10px] font-bold {{ member.isActive ? 'border-brand-500/30 text-brand-300 bg-brand-500/10' : 'text-zinc-400 border-zinc-700' }}"
                   >
                     {{ member.isActive ? 'Active' : 'Inactive' }}
                   </span>
@@ -106,7 +106,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                     variant="ghost"
                     size="icon"
                     (click)="openEditModal(member)"
-                    class="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    class="h-8 w-8 text-zinc-400 hover:text-brand-300 hover:bg-brand-500/10"
                   >
                     <ng-icon name="lucidePencil" class="text-sm"></ng-icon>
                   </button>
@@ -115,7 +115,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
                     variant="ghost"
                     size="icon"
                     (click)="deleteMember(member.id!)"
-                    class="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10"
+                    class="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
                   >
                     <ng-icon name="lucideTrash2" class="text-sm"></ng-icon>
                   </button>
@@ -123,7 +123,7 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
               </tr>
               <tr *ngIf="filteredMembers().length === 0">
                 <td [attr.colspan]="authService.isAuthenticated() ? 6 : 5" class="py-12 text-center text-muted-foreground">
-                  <ng-icon name="lucideUsers" class="text-3xl text-muted-foreground/40 mb-2"></ng-icon>
+                  <ng-icon name="lucideUsers" class="text-3xl text-brand-500/30 mb-2"></ng-icon>
                   <p class="text-sm">No members found.</p>
                 </td>
               </tr>
@@ -141,34 +141,34 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
         <form (ngSubmit)="saveMember()" class="space-y-4">
           <div class="space-y-1.5">
             <label class="text-xs font-semibold text-foreground">Full Name</label>
-            <input hlmInput type="text" [(ngModel)]="currentMember.name" name="name" required placeholder="e.g. Alice Smith" />
+            <input hlmInput type="text" [(ngModel)]="currentMember.name" name="name" required placeholder="e.g. Alice Smith" class="focus:border-brand-500/60" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">Email Address</label>
-              <input hlmInput type="email" [(ngModel)]="currentMember.email" name="email" required placeholder="alice@example.com" />
+              <input hlmInput type="email" [(ngModel)]="currentMember.email" name="email" required placeholder="alice@example.com" class="focus:border-brand-500/60" />
             </div>
 
             <div class="space-y-1.5">
               <label class="text-xs font-semibold text-foreground">Phone Number</label>
-              <input hlmInput type="text" [(ngModel)]="currentMember.phone" name="phone" required placeholder="+1 555-0192" />
+              <input hlmInput type="text" [(ngModel)]="currentMember.phone" name="phone" required placeholder="+1 555-0192" class="focus:border-brand-500/60" />
             </div>
           </div>
 
           <div class="space-y-1.5">
             <label class="text-xs font-semibold text-foreground">Postal Address</label>
-            <input hlmInput type="text" [(ngModel)]="currentMember.address" name="address" required placeholder="123 Science Park Way" />
+            <input hlmInput type="text" [(ngModel)]="currentMember.address" name="address" required placeholder="123 Science Park Way" class="focus:border-brand-500/60" />
           </div>
 
           <div class="flex items-center space-x-2 pt-2">
-            <input type="checkbox" [(ngModel)]="currentMember.isActive" name="isActive" id="isActive" class="rounded border-input text-primary focus:ring-ring" />
+            <input type="checkbox" [(ngModel)]="currentMember.isActive" name="isActive" id="isActive" class="rounded border-input text-brand-600 focus:ring-brand-500" />
             <label for="isActive" class="text-xs font-semibold text-foreground">Active Member Account</label>
           </div>
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="shadow-lg shadow-orange-500/30">
+            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
               {{ isEditMode ? 'Save Profile' : 'Register Member' }}
             </button>
           </div>
@@ -246,3 +246,4 @@ export class MembersComponent implements OnInit {
     }
   }
 }
+

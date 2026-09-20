@@ -65,6 +65,6 @@ export class AuthService {
     localStorage.removeItem('lms_user');
     this.tokenSignal.set(null);
     this.currentUserSignal.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/student/login']);
   }
 }

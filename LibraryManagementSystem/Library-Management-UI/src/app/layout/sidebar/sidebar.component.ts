@@ -52,12 +52,17 @@ import {
       <div class="space-y-6">
         <!-- Logo Header -->
         <div class="flex items-center space-x-3 px-3 py-2 border-b border-border/50 pb-4">
-          <div class="w-10 h-10 rounded-2xl bg-white text-black flex items-center justify-center font-black shadow-lg shadow-white/10">
-            <ng-icon name="lucideLibrary" class="text-xl text-black"></ng-icon>
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center font-black shadow-lg"
+               [ngClass]="authService.isStudent() ? 'shadow-brand-500/20 text-white' : (authService.isLibrarian() ? 'shadow-purple-500/20 text-white' : 'bg-white shadow-white/10 text-black')"
+               [style.background]="authService.isStudent() ? 'linear-gradient(135deg, #f59e0b, #d97706)' : (authService.isLibrarian() ? 'linear-gradient(135deg, #a855f7, #9333ea)' : '')"
+          >
+            <ng-icon name="lucideLibrary" class="text-xl"></ng-icon>
           </div>
           <div>
             <h1 class="font-extrabold text-lg tracking-tight text-white">LibVerse</h1>
-            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+            <p class="text-[10px] font-bold uppercase tracking-widest"
+               [ngClass]="authService.isStudent() ? 'text-brand-400' : (authService.isLibrarian() ? 'text-purple-400' : 'text-zinc-400')"
+            >
               {{ authService.isAdmin() ? 'Admin Portal' : (authService.isLibrarian() ? 'Librarian Desk' : 'Student Portal') }}
             </p>
           </div>
@@ -71,8 +76,8 @@ import {
             
             <a
               routerLink="/student/dashboard"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLinkActive="bg-brand-500/10 text-brand-300 font-bold border-r-2 border-brand-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-brand-300 hover:bg-brand-500/5 transition-all group"
             >
               <ng-icon name="lucideLayoutDashboard" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Dashboard</span>
@@ -80,8 +85,8 @@ import {
 
             <a
               routerLink="/student/books"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLinkActive="bg-brand-500/10 text-brand-300 font-bold border-r-2 border-brand-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-brand-300 hover:bg-brand-500/5 transition-all group"
             >
               <ng-icon name="lucideBookOpen" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Browse Books</span>
@@ -89,8 +94,8 @@ import {
 
             <a
               routerLink="/student/borrowings"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLinkActive="bg-brand-500/10 text-brand-300 font-bold border-r-2 border-brand-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-brand-300 hover:bg-brand-500/5 transition-all group"
             >
               <ng-icon name="lucideBookmarkCheck" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Loans & Fines</span>
@@ -98,8 +103,8 @@ import {
 
             <a
               routerLink="/student/profile"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLinkActive="bg-brand-500/10 text-brand-300 font-bold border-r-2 border-brand-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-brand-300 hover:bg-brand-500/5 transition-all group"
             >
               <ng-icon name="lucideUser" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>My Profile</span>
@@ -108,57 +113,57 @@ import {
 
           <!-- LIBRARIAN NAVIGATION -->
           <ng-container *ngIf="authService.isLibrarian()">
-            <div class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Librarian Desk</div>
+            <div class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-300">Librarian Desk</div>
 
             <a
-              routerLink="/librarian/dashboard"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/dashboard"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucideLayoutDashboard" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Dashboard</span>
             </a>
 
             <a
-              routerLink="/librarian/books"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/books"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucideBookOpen" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Manage Books</span>
             </a>
 
             <a
-              routerLink="/librarian/borrowings"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/borrowings"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucidePlus" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Issue Books</span>
             </a>
 
             <a
-              routerLink="/librarian/returns"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/returns"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucideRotateCcw" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Process Returns</span>
             </a>
 
             <a
-              routerLink="/librarian/students"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/students"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucideUsers" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Student Records</span>
             </a>
 
             <a
-              routerLink="/librarian/fines"
-              routerLinkActive="bg-white/10 text-white font-bold border-r-2 border-white"
-              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all group"
+              routerLink="/staff/fines"
+              routerLinkActive="bg-purple-500/15 text-purple-300 font-bold border-r-2 border-purple-500"
+              class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-purple-300 hover:bg-purple-500/5 transition-all group"
             >
               <ng-icon name="lucideDollarSign" class="text-base group-hover:scale-110 transition-transform"></ng-icon>
               <span>Manage Fines</span>
@@ -239,12 +244,17 @@ import {
       <div class="pt-4 border-t border-border/50 space-y-3">
         <div *ngIf="authService.currentUser() as user" class="p-3 rounded-xl bg-zinc-900 flex items-center justify-between border border-zinc-800">
           <div class="flex items-center space-x-3 overflow-hidden">
-            <div class="w-8 h-8 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-xs">
+            <div class="w-8 h-8 rounded-full font-extrabold flex items-center justify-center text-xs"
+                 [ngClass]="authService.isStudent() || authService.isLibrarian() ? 'text-white' : 'bg-white text-black'"
+                 [style.background]="authService.isStudent() ? 'linear-gradient(135deg, #f59e0b, #d97706)' : (authService.isLibrarian() ? 'linear-gradient(135deg, #a855f7, #9333ea)' : '')"
+            >
               {{ user.username.substring(0, 2).toUpperCase() }}
             </div>
             <div class="truncate">
               <p class="text-xs font-semibold text-white truncate">{{ user.username }}</p>
-              <span hlmBadge variant="outline" class="text-[9px] py-0 px-1.5 text-white border-white/20 bg-white/10">
+              <span hlmBadge variant="outline" 
+                    class="text-[9px] py-0 px-1.5 {{ authService.isStudent() ? 'text-brand-300 border-brand-500/30 bg-brand-500/10' : (authService.isLibrarian() ? 'text-purple-300 border-purple-500/30 bg-purple-500/10' : 'text-white border-white/20 bg-white/10') }}"
+              >
                 {{ user.role }}
               </span>
             </div>
@@ -267,4 +277,5 @@ import {
 export class SidebarComponent {
   authService = inject(AuthService);
 }
+
 

@@ -2,25 +2,31 @@ import { Routes } from '@angular/router';
 import { studentGuard, librarianGuard, adminGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: '', redirectTo: 'student/login', pathMatch: 'full' },
   
-  // Public Auth
+  // ── STUDENT AUTH (public) ─────────────────────────────────────────────────
   {
-    path: 'auth/login',
+    path: 'student/login',
     loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent)
   },
   {
-    path: 'auth/register',
+    path: 'student/register',
     loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent)
   },
 
-  // Separate Protected Admin Login
+  // ── STAFF AUTH (public) ───────────────────────────────────────────────────
+  {
+    path: 'staff/login',
+    loadComponent: () => import('./features/auth/staff-login.component').then(m => m.StaffLoginComponent)
+  },
+
+  // ── ADMIN AUTH (public) ───────────────────────────────────────────────────
   {
     path: 'admin/login',
     loadComponent: () => import('./features/admin/admin-login.component').then(m => m.AdminLoginComponent)
   },
 
-  // Student Routes
+  // ── STUDENT ROUTES (protected) ────────────────────────────────────────────
   {
     path: 'student',
     redirectTo: 'student/dashboard',
@@ -47,54 +53,67 @@ export const routes: Routes = [
     loadComponent: () => import('./features/student/student-portal.component').then(m => m.StudentPortalComponent)
   },
 
-  // Librarian Routes
+  // ── STAFF / LIBRARIAN ROUTES (protected) ──────────────────────────────────
   {
-    path: 'librarian',
-    redirectTo: 'librarian/dashboard',
+    path: 'staff',
+    redirectTo: 'staff/dashboard',
     pathMatch: 'full'
   },
   {
-    path: 'librarian/dashboard',
+    path: 'staff/dashboard',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/librarian/librarian-portal.component').then(m => m.LibrarianPortalComponent)
   },
   {
-    path: 'librarian/books',
+    path: 'staff/books',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/books/books.component').then(m => m.BooksComponent)
   },
   {
-    path: 'librarian/books/create',
+    path: 'staff/books/create',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/books/books.component').then(m => m.BooksComponent)
   },
   {
-    path: 'librarian/books/edit',
+    path: 'staff/books/edit',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/books/books.component').then(m => m.BooksComponent)
   },
   {
-    path: 'librarian/borrowings',
+    path: 'staff/borrowings',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/borrowings/borrowings.component').then(m => m.BorrowingsComponent)
   },
   {
-    path: 'librarian/returns',
+    path: 'staff/returns',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/librarian/librarian-portal.component').then(m => m.LibrarianPortalComponent)
   },
   {
-    path: 'librarian/students',
+    path: 'staff/students',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/members/members.component').then(m => m.MembersComponent)
   },
   {
-    path: 'librarian/fines',
+    path: 'staff/fines',
     canActivate: [librarianGuard],
     loadComponent: () => import('./features/borrowings/borrowings.component').then(m => m.BorrowingsComponent)
   },
 
-  // Admin Routes
+  // Legacy librarian/* redirects (backwards compatibility)
+  { path: 'librarian', redirectTo: 'staff/dashboard', pathMatch: 'full' },
+  { path: 'librarian/dashboard', redirectTo: 'staff/dashboard', pathMatch: 'full' },
+  { path: 'librarian/books', redirectTo: 'staff/books', pathMatch: 'full' },
+  { path: 'librarian/borrowings', redirectTo: 'staff/borrowings', pathMatch: 'full' },
+  { path: 'librarian/returns', redirectTo: 'staff/returns', pathMatch: 'full' },
+  { path: 'librarian/students', redirectTo: 'staff/students', pathMatch: 'full' },
+  { path: 'librarian/fines', redirectTo: 'staff/fines', pathMatch: 'full' },
+
+  // Legacy auth/* redirects (backwards compatibility)
+  { path: 'auth/login', redirectTo: 'student/login', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'student/register', pathMatch: 'full' },
+
+  // ── ADMIN ROUTES (protected) ──────────────────────────────────────────────
   {
     path: 'admin',
     redirectTo: 'admin/dashboard',
@@ -137,6 +156,5 @@ export const routes: Routes = [
   },
 
   // Fallback
-  { path: '**', redirectTo: 'student/dashboard' }
+  { path: '**', redirectTo: 'student/login' }
 ];
-
