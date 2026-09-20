@@ -4,13 +4,15 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { UserDto, AuthResponse } from '../models/auth.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private readonly baseUrl = 'http://localhost:5000/api/Auth';
+  private readonly baseUrl = `${environment.apiUrl}/Auth`;
 
   // Signals
   private tokenSignal = signal<string | null>(localStorage.getItem('lms_token'));
@@ -66,7 +68,9 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, userDto).pipe(
       tap(res => {
         if (res.token) {
-          this.setSession(res.token, userDto.username, userDto.role || 'Student', userDto.email, userDto.fullName);
+          const role = res.user?.role || userDto.role || 'Student';
+          const username = res.user?.username || userDto.username;
+          this.setSession(res.token, username, role, userDto.email || username, userDto.fullName || username);
         }
       })
     );

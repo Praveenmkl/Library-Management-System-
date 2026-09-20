@@ -17,6 +17,11 @@ export interface AuthResponse {
   token?: string;
   message?: string;
   id?: string;
+  user?: {
+    id?: string;
+    username?: string;
+    role?: string;
+  };
 }
 
 export interface UserSession {

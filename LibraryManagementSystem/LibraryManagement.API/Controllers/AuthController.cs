@@ -40,8 +40,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var token = await _authService.LoginAsync(userDto.Username, userDto.Password);
-            return Ok(new { token });
+            var result = await _authService.LoginAsync(userDto.Username, userDto.Password);
+            return Ok(result);
         }
         catch (Exception ex)
         {

@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Member } from '../models/member.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MemberService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:5000/api/Members';
+  private readonly baseUrl = `${environment.apiUrl}/Members`;
 
   // Reactive state
   readonly members = signal<Member[]>([]);

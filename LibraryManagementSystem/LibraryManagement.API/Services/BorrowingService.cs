@@ -38,12 +38,42 @@ public class BorrowingService
         if (book.AvailableCopies <= 0)
             throw new Exception("Book is not available for borrowing.");
 
-        var member = await _memberService.GetByIdAsync(borrowing.MemberId);
+        Member? member = null;
+        if (!string.IsNullOrEmpty(borrowing.MemberId))
+        {
+            member = await _memberService.GetByIdAsync(borrowing.MemberId);
+        }
+
+        if (member == null)
+        {
+            var allMembers = await _memberService.GetAllAsync();
+            member = allMembers.FirstOrDefault(m => 
+                m.Id == borrowing.MemberId || 
+                string.Equals(m.Email, borrowing.MemberId, StringComparison.OrdinalIgnoreCase) || 
+                string.Equals(m.Name, borrowing.MemberId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (member == null && !string.IsNullOrEmpty(borrowing.MemberId))
+        {
+            member = new Member
+            {
+                Name = borrowing.MemberId,
+                Email = borrowing.MemberId.Contains("@") ? borrowing.MemberId : $"{borrowing.MemberId}@student.edu",
+                Phone = "+1 555-0100",
+                Address = "Campus Quad",
+                IsActive = true,
+                RegisteredAt = DateTime.UtcNow
+            };
+            await _memberService.CreateAsync(member);
+        }
+
         if (member == null)
             throw new Exception("Member not found.");
 
         if (!member.IsActive)
             throw new Exception("Member is not active.");
+
+        borrowing.MemberId = member.Id!;
 
         // Set default values
         borrowing.BorrowedAt = DateTime.UtcNow;

@@ -163,15 +163,19 @@ export class StaffLoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    // Set librarian session
-    this.authService.setSession(
-      'session_token_' + Date.now(),
-      this.username,
-      'Librarian',
-      this.username,
-      this.username
-    );
-    this.loading = false;
-    this.router.navigate(['/staff/dashboard']);
+    this.authService.login({
+      username: this.username,
+      password: this.password,
+      role: 'Librarian'
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/staff/dashboard']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Invalid credentials or API server unreachable.';
+      }
+    });
   }
 }

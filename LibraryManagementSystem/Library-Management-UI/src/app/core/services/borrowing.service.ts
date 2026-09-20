@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Borrowing } from '../models/borrowing.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class BorrowingService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:5000/api/Borrowings';
+  private readonly baseUrl = `${environment.apiUrl}/Borrowings`;
 
   // Reactive state
   readonly borrowings = signal<Borrowing[]>([]);

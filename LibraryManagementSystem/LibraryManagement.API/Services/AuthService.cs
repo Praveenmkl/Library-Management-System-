@@ -37,7 +37,7 @@ public class AuthService
         return user;
     }
 
-    public async Task<string> LoginAsync(string username, string password)
+    public async Task<object> LoginAsync(string username, string password)
     {
         var user = await _userRepository.GetByUsernameAsync(username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
@@ -45,7 +45,17 @@ public class AuthService
             throw new Exception("Invalid username or password.");
         }
 
-        return GenerateJwtToken(user);
+        var token = GenerateJwtToken(user);
+        return new
+        {
+            token,
+            user = new
+            {
+                id = user.Id,
+                username = user.Username,
+                role = user.Role
+            }
+        };
     }
 
     private string GenerateJwtToken(User user)

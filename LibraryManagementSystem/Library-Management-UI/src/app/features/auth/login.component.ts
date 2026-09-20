@@ -146,10 +146,20 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    // Set student session
-    this.authService.setSession('session_token_' + Date.now(), this.username, 'Student', this.username, this.username);
-    this.loading = false;
-    this.router.navigate(['/student/dashboard']);
+    this.authService.login({
+      username: this.username,
+      password: this.password,
+      role: 'Student'
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/student/dashboard']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Invalid credentials or API server unreachable.';
+      }
+    });
   }
 }
 

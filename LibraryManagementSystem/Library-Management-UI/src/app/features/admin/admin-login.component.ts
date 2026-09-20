@@ -128,9 +128,19 @@ export class AdminLoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    // Authenticate Admin Session
-    this.authService.setSession('admin_secret_token', this.username, 'Admin', `${this.username}@library.org`, 'Executive Administrator');
-    this.loading = false;
-    this.router.navigate(['/admin/dashboard']);
+    this.authService.login({
+      username: this.username,
+      password: this.password,
+      role: 'Admin'
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/admin/dashboard']);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Invalid credentials or API server unreachable.';
+      }
+    });
   }
 }

@@ -192,9 +192,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        // Fallback for UI demo if backend endpoint is unavailable
-        this.successMessage = 'Student account created successfully! Redirecting to login...';
-        setTimeout(() => this.router.navigate(['/student/login']), 1200);
+        this.errorMessage = err.error?.message || 'Registration failed. Please check your information or try again.';
       }
     });
   }

@@ -18,7 +18,7 @@ import { lucideSun, lucideMoon, lucideBell, lucideCircleCheck, lucideLogOut } fr
           <h2 class="text-sm font-semibold text-foreground">Library Workspace</h2>
           <div class="flex items-center space-x-2 text-[11px] text-muted-foreground">
             <span class="w-2.5 h-2.5 rounded-full bg-[#1bfc06] shadow-[0_0_10px_#1bfc06] animate-pulse"></span>
-            <span>API Online (localhost:5000)</span>
+            <span>API Online (localhost:5020)</span>
           </div>
         </div>
       </div>

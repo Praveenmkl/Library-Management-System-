@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Book } from '../models/book.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class BookService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:5000/api/Books';
+  private readonly baseUrl = `${environment.apiUrl}/Books`;
 
   // Reactive state
   readonly books = signal<Book[]>([]);
