@@ -41,9 +41,10 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
           hlmBtn
           variant="default"
           (click)="openIssueModal()"
-          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
+          class="font-bold shadow-lg"
+          [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-gradient-to-br !from-[#96ff00] !to-[#85e600] !text-black shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
         >
-          <ng-icon name="lucidePlus" class="mr-2 text-base"></ng-icon>
+          <ng-icon name="lucidePlus" class="mr-2 text-base" [class.text-black]="authService.isAdmin() || authService.isLibrarian()"></ng-icon>
           Issue Book Loan
         </button>
       </div>
@@ -57,7 +58,7 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             type="text"
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
-            placeholder="Search by Book ID or Member ID..."
+            placeholder="Search by Title, Student Name, or ID..."
             class="pl-10 focus:border-brand-500/50"
           />
         </div>
@@ -68,7 +69,8 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === '' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('')"
-            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === '' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="filterStatus() === '' ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             All Loans
           </button>
@@ -77,7 +79,8 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Borrowed' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Borrowed')"
-            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Borrowed' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="filterStatus() === 'Borrowed' ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             Active
           </button>
@@ -86,7 +89,8 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Returned' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Returned')"
-            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Returned' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="filterStatus() === 'Returned' ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             Returned
           </button>
@@ -95,7 +99,8 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
             [variant]="filterStatus() === 'Overdue' ? 'default' : 'outline'"
             size="sm"
             (click)="filterStatus.set('Overdue')"
-            class="text-xs rounded-full font-bold transition-all {{ filterStatus() === 'Overdue' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="filterStatus() === 'Overdue' ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             Overdue
           </button>
@@ -215,7 +220,13 @@ import { lucideBookmarkCheck, lucidePlus, lucideSearch, lucideRotateCcw, lucideC
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
+            <button
+              hlmBtn
+              variant="default"
+              type="submit"
+              class="font-bold shadow-lg"
+              [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black hover:!bg-[#85e600] shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
+            >
               Issue Loan
             </button>
           </div>
@@ -254,8 +265,18 @@ export class BorrowingsComponent implements OnInit {
     const isStudent = this.authService.isStudent();
 
     return this.borrowingService.borrowings().filter(b => {
-      const matchesUser = !isStudent || (user && (b.memberId.toLowerCase() === user.username.toLowerCase() || b.memberId.toLowerCase() === (user.email || '').toLowerCase() || b.memberId.toLowerCase().includes('student')));
-      const matchesSearch = !term || b.bookId.toLowerCase().includes(term) || b.memberId.toLowerCase().includes(term);
+      const matchesUser = !isStudent || (user && (
+        (user.memberId && b.memberId === user.memberId) ||
+        b.memberId.toLowerCase() === user.username.toLowerCase() ||
+        b.memberId.toLowerCase() === (user.email || '').toLowerCase()
+      ));
+      const title = this.getBookTitle(b.bookId).toLowerCase();
+      const member = this.getMemberName(b.memberId).toLowerCase();
+      const matchesSearch = !term ||
+        title.includes(term) ||
+        member.includes(term) ||
+        b.bookId.toLowerCase().includes(term) ||
+        b.memberId.toLowerCase().includes(term);
       const matchesStatus = !status || b.status === status;
       return matchesUser && matchesSearch && matchesStatus;
     });
@@ -265,6 +286,13 @@ export class BorrowingsComponent implements OnInit {
     this.borrowingService.loadAll().subscribe();
     this.bookService.loadAll().subscribe();
     this.memberService.loadAll().subscribe();
+
+    const user = this.authService.currentUser();
+    if (user && this.authService.isStudent() && !user.memberId) {
+      this.authService.resolveMemberId(user.username, user.fullName).subscribe(() => {
+        this.borrowingService.loadAll().subscribe();
+      });
+    }
 
     // Default due date: +14 days from now
     const d = new Date();

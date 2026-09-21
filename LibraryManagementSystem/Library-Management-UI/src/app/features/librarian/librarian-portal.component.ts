@@ -54,10 +54,10 @@ import {
   template: `
     <div class="space-y-8 animate-in fade-in duration-300">
       <!-- Hero Banner -->
-      <div class="relative overflow-hidden rounded-3xl p-8 border border-purple-500/30 backdrop-blur-xl">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(168,85,247,0.15)_0%,_transparent_60%)]"></div>
+      <div class="relative overflow-hidden rounded-3xl p-8 border border-[#96ff00]/30 backdrop-blur-xl">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(150,255,0,0.15)_0%,_transparent_60%)]"></div>
         <div class="relative z-10 max-w-2xl">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-xs font-bold text-purple-300 mb-3">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#96ff00]/15 border border-[#96ff00]/30 text-xs font-bold text-[#96ff00] mb-3">
             <ng-icon name="lucideBookOpen" class="text-sm"></ng-icon>
             <span>Librarian Circulation Desk</span>
           </div>
@@ -71,19 +71,19 @@ import {
       <!-- Quick Desk Action Widgets -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Express Issue Desk -->
-        <div hlmCard class="p-6 space-y-4 border border-purple-500/20 hover:border-purple-500/40 glass-card">
+        <div hlmCard class="p-6 space-y-4 border border-[#96ff00]/20 hover:border-[#96ff00]/40 glass-card">
           <div class="flex items-center justify-between pb-3 border-b border-border/50">
             <div>
               <h3 class="text-lg font-bold text-foreground">Express Issue Counter</h3>
               <p class="text-xs text-muted-foreground">Checkout book to student or member</p>
             </div>
-            <span hlmBadge variant="outline" class="text-xs font-bold text-purple-300 border-purple-500/30 bg-purple-500/10">Counter Mode</span>
+            <span hlmBadge variant="outline" class="text-xs font-bold text-[#96ff00] border-[#96ff00]/30 bg-[#96ff00]/10">Counter Mode</span>
           </div>
 
           <form (ngSubmit)="issueLoan()" class="space-y-3">
             <div class="space-y-1">
               <label class="text-xs font-semibold text-foreground">Select Book Copy</label>
-              <select hlmInput [(ngModel)]="quickBookId" name="quickBookId" required class="appearance-none bg-background/50 focus:border-purple-500/60">
+              <select hlmInput [(ngModel)]="quickBookId" name="quickBookId" required class="appearance-none bg-background/50 focus:border-[#96ff00]/60">
                 <option value="" disabled>-- Select Available Book --</option>
                 <option *ngFor="let b of availableBooks()" [value]="b.id">
                   {{ b.title }} ({{ b.availableCopies }} copies left)
@@ -93,7 +93,7 @@ import {
 
             <div class="space-y-1">
               <label class="text-xs font-semibold text-foreground">Select Member / Student</label>
-              <select hlmInput [(ngModel)]="quickMemberId" name="quickMemberId" required class="appearance-none bg-background/50 focus:border-purple-500/60">
+              <select hlmInput [(ngModel)]="quickMemberId" name="quickMemberId" required class="appearance-none bg-background/50 focus:border-[#96ff00]/60">
                 <option value="" disabled>-- Select Member --</option>
                 <option *ngFor="let m of activeMembersList()" [value]="m.id">
                   {{ m.name }} ({{ m.email }})
@@ -103,10 +103,10 @@ import {
 
             <div class="space-y-1">
               <label class="text-xs font-semibold text-foreground">Due Date</label>
-              <input hlmInput type="date" [(ngModel)]="dueDateInput" name="dueDate" required class="focus:border-purple-500/60" />
+              <input hlmInput type="date" [(ngModel)]="dueDateInput" name="dueDate" required class="focus:border-[#96ff00]/60" />
             </div>
 
-            <button hlmBtn variant="default" type="submit" class="w-full font-bold !bg-gradient-to-br !from-purple-600 !to-purple-700 !text-white !border-0 shadow-lg shadow-purple-600/30 hover:!from-purple-700 hover:!to-purple-800 mt-2">
+            <button hlmBtn variant="default" type="submit" class="w-full font-bold !bg-gradient-to-br !from-[#96ff00] !to-[#85e600] !text-black !border-0 shadow-lg shadow-[#96ff00]/30 hover:!from-[#96ff00] hover:!to-[#85e600] mt-2">
               <ng-icon name="lucidePlus" class="mr-2 text-base"></ng-icon>
               Complete Book Checkout
             </button>
@@ -114,25 +114,24 @@ import {
         </div>
 
         <!-- Overdue Action Feed -->
-        <div hlmCard class="p-6 space-y-4 border border-purple-500/20 hover:border-purple-500/40 glass-card">
+        <div hlmCard class="p-6 space-y-4 border border-[#96ff00]/20 hover:border-[#96ff00]/40 glass-card">
           <div class="flex items-center justify-between pb-3 border-b border-border/50">
             <div>
               <h3 class="text-lg font-bold text-foreground">Overdue Loan Feed</h3>
               <p class="text-xs text-muted-foreground">High priority overdue reminders</p>
             </div>
-            <span hlmBadge variant="outline" class="text-xs font-bold text-purple-300 border-purple-500/30 bg-purple-500/10">{{ overdueItems().length }} Pending</span>
+            <span hlmBadge variant="outline" class="text-xs font-bold text-[#96ff00] border-[#96ff00]/30 bg-[#96ff00]/10">{{ overdueItems().length }} Pending</span>
           </div>
 
           <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
-            <div *ngFor="let item of overdueItems()" class="p-3 rounded-xl bg-purple-500/5 border border-purple-500/20 flex items-center justify-between">
+            <div *ngFor="let item of overdueItems()" class="p-3 rounded-xl bg-[#96ff00]/5 border border-[#96ff00]/20 flex items-center justify-between">
               <div>
                 <p class="font-bold text-xs text-foreground">{{ getBookTitle(item.bookId) }}</p>
                 <p class="text-[11px] text-muted-foreground">Member: {{ getMemberName(item.memberId) }}</p>
               </div>
-              <button hlmBtn variant="outline" size="sm" (click)="sendReminder(item)" class="text-xs text-purple-300 border-purple-500/30 hover:bg-purple-500/15 font-bold">
-                <ng-icon name="lucideMail" class="mr-1 text-xs"></ng-icon>
-                Send Reminder
-              </button>
+              <span hlmBadge variant="outline" class="text-[10px] font-bold text-red-400 border-red-500/30">
+                Overdue
+              </span>
             </div>
 
             <div *ngIf="overdueItems().length === 0" class="py-8 text-center text-xs text-muted-foreground">
@@ -143,7 +142,7 @@ import {
       </div>
 
       <!-- Active Circulation Table -->
-      <div hlmCard class="p-0 overflow-hidden shadow-xl border border-purple-500/20">
+      <div hlmCard class="p-0 overflow-hidden shadow-xl border border-[#96ff00]/20">
         <div class="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
           <h3 class="text-lg font-bold text-foreground">Active Circulation Desk Log</h3>
           <input
@@ -152,7 +151,7 @@ import {
             [ngModel]="searchTerm()"
             (ngModelChange)="searchTerm.set($event)"
             placeholder="Search transactions..."
-            class="w-64 text-xs focus:border-purple-500/60"
+            class="w-64 text-xs focus:border-[#96ff00]/60"
           />
         </div>
 
@@ -168,7 +167,7 @@ import {
               </tr>
             </thead>
             <tbody class="divide-y divide-border/40">
-              <tr *ngFor="let item of filteredBorrowings()" class="hover:bg-purple-500/5 transition-colors">
+              <tr *ngFor="let item of filteredBorrowings()" class="hover:bg-[#96ff00]/5 transition-colors">
                 <td class="py-4 px-6">
                   <div class="font-bold text-foreground">{{ getBookTitle(item.bookId) }}</div>
                   <div class="text-[11px] font-mono text-muted-foreground">ID: {{ item.bookId }}</div>
@@ -182,7 +181,7 @@ import {
                   <span
                     hlmBadge
                     variant="outline"
-                    class="text-[10px] font-bold {{ item.status === 'Overdue' ? 'text-red-400 border-red-500/30' : (item.status === 'Returned' ? 'text-emerald-400 border-emerald-500/30' : 'text-purple-300 border-purple-500/30 bg-purple-500/10') }}"
+                    class="text-[10px] font-bold {{ item.status === 'Overdue' ? 'text-red-400 border-red-500/30' : (item.status === 'Returned' ? 'text-emerald-400 border-emerald-500/30' : 'text-[#96ff00] border-[#96ff00]/30 bg-[#96ff00]/10') }}"
                   >
                     {{ item.status }}
                   </span>
@@ -194,7 +193,7 @@ import {
                     variant="outline"
                     size="sm"
                     (click)="returnBook(item.id!)"
-                    class="text-xs text-purple-300 border-purple-500/30 hover:bg-purple-500/15 font-bold"
+                    class="text-xs text-[#96ff00] border-[#96ff00]/30 hover:bg-[#96ff00]/15 font-bold"
                   >
                     <ng-icon name="lucideRotateCcw" class="mr-1.5 text-xs"></ng-icon>
                     Process Return
@@ -281,12 +280,9 @@ export class LibrarianPortalComponent implements OnInit {
       this.borrowingService.returnBook(id).subscribe({
         next: () => {
           this.bookService.loadAll().subscribe();
+          this.borrowingService.loadAll().subscribe();
         }
       });
     }
-  }
-
-  sendReminder(item: Borrowing) {
-    alert(`Overdue reminder email sent to ${this.getMemberName(item.memberId)}!`);
   }
 }

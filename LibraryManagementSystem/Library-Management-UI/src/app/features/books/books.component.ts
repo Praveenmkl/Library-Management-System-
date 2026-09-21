@@ -41,9 +41,10 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
           hlmBtn
           variant="default"
           (click)="openAddModal()"
-          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
+          class="font-bold shadow-lg"
+          [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-gradient-to-br !from-[#96ff00] !to-[#85e600] !text-black shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
         >
-          <ng-icon name="lucidePlus" class="mr-2 text-base"></ng-icon>
+          <ng-icon name="lucidePlus" class="mr-2 text-base" [class.text-black]="authService.isAdmin() || authService.isLibrarian()"></ng-icon>
           Add New Book
         </button>
       </div>
@@ -68,7 +69,8 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
             [variant]="selectedCategory() === '' ? 'default' : 'outline'"
             size="sm"
             (click)="selectedCategory.set('')"
-            class="text-xs rounded-full font-bold transition-all {{ selectedCategory() === '' ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="selectedCategory() === '' ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             All Genres
           </button>
@@ -78,7 +80,8 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
             [variant]="selectedCategory() === cat ? 'default' : 'outline'"
             size="sm"
             (click)="selectedCategory.set(cat)"
-            class="text-xs rounded-full font-bold transition-all {{ selectedCategory() === cat ? '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10' }}"
+            class="text-xs rounded-full font-bold transition-all"
+            [ngClass]="selectedCategory() === cat ? (authService.isAdmin() ? '!bg-white !text-black !border-0 shadow-md shadow-white/20' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black !border-0 shadow-md shadow-[#96ff00]/20' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-md shadow-brand-500/20')) : (authService.isAdmin() ? 'border-white/30 text-white hover:bg-white/10' : (authService.isLibrarian() ? 'border-[#96ff00]/30 text-[#96ff00] hover:bg-[#96ff00]/10' : 'border-brand-500/30 text-brand-300 hover:bg-brand-500/10'))"
           >
             {{ cat }}
           </button>
@@ -270,7 +273,13 @@ import { lucideBookOpen, lucidePlus, lucideSearch, lucidePencil, lucideTrash2, l
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
+            <button
+              hlmBtn
+              variant="default"
+              type="submit"
+              class="font-bold shadow-lg"
+              [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black hover:!bg-[#85e600] shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
+            >
               {{ isEditMode ? 'Save Changes' : 'Add Book' }}
             </button>
           </div>
@@ -331,11 +340,13 @@ export class BooksComponent implements OnInit {
 
   borrowBook(book: Book) {
     if (confirm(`Borrow a copy of "${book.title}"?`)) {
+      const cur = this.authService.currentUser();
+      const targetMemberId = cur?.memberId || cur?.email || cur?.username || 'student_demo';
       const d = new Date();
       d.setDate(d.getDate() + 14);
       this.borrowingService.borrowBook({
         bookId: book.id || '',
-        memberId: this.authService.currentUser()?.username || 'student_demo',
+        memberId: targetMemberId,
         dueDate: d.toISOString(),
         status: 'Borrowed',
         fineAmount: 0
@@ -343,6 +354,7 @@ export class BooksComponent implements OnInit {
         next: () => {
           alert(`Successfully borrowed "${book.title}"!`);
           this.bookService.loadAll().subscribe();
+          this.borrowingService.loadAll().subscribe();
         },
         error: (err) => alert(err.error?.message || 'Failed to borrow book')
       });

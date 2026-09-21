@@ -31,59 +31,48 @@ public class BorrowingService
 
     public async Task<Borrowing> BorrowBookAsync(Borrowing borrowing)
     {
+        if (string.IsNullOrWhiteSpace(borrowing.BookId))
+            throw new ArgumentException("Book ID is required.");
+        if (string.IsNullOrWhiteSpace(borrowing.MemberId))
+            throw new ArgumentException("Member ID is required.");
+
         var book = await _bookService.GetByIdAsync(borrowing.BookId);
         if (book == null)
-            throw new Exception("Book not found.");
+            throw new KeyNotFoundException("Book not found.");
 
         if (book.AvailableCopies <= 0)
-            throw new Exception("Book is not available for borrowing.");
+            throw new InvalidOperationException("This book has no available copies left for borrowing.");
 
-        Member? member = null;
-        if (!string.IsNullOrEmpty(borrowing.MemberId))
-        {
-            member = await _memberService.GetByIdAsync(borrowing.MemberId);
-        }
-
+        // Find member by ID or by email/username
+        Member? member = await _memberService.GetByIdAsync(borrowing.MemberId);
         if (member == null)
         {
             var allMembers = await _memberService.GetAllAsync();
-            member = allMembers.FirstOrDefault(m => 
-                m.Id == borrowing.MemberId || 
-                string.Equals(m.Email, borrowing.MemberId, StringComparison.OrdinalIgnoreCase) || 
+            member = allMembers.FirstOrDefault(m =>
+                m.Id == borrowing.MemberId ||
+                string.Equals(m.Email, borrowing.MemberId, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(m.Name, borrowing.MemberId, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (member == null && !string.IsNullOrEmpty(borrowing.MemberId))
-        {
-            member = new Member
-            {
-                Name = borrowing.MemberId,
-                Email = borrowing.MemberId.Contains("@") ? borrowing.MemberId : $"{borrowing.MemberId}@student.edu",
-                Phone = "+1 555-0100",
-                Address = "Campus Quad",
-                IsActive = true,
-                RegisteredAt = DateTime.UtcNow
-            };
-            await _memberService.CreateAsync(member);
-        }
-
         if (member == null)
-            throw new Exception("Member not found.");
+            throw new KeyNotFoundException("Member record not found. Please ensure the student is registered.");
 
         if (!member.IsActive)
-            throw new Exception("Member is not active.");
+            throw new InvalidOperationException("Member account is deactivated.");
 
         borrowing.MemberId = member.Id!;
-
-        // Set default values
         borrowing.BorrowedAt = DateTime.UtcNow;
-        borrowing.DueDate = DateTime.UtcNow.AddDays(14); // 14 days default
+        if (borrowing.DueDate == default)
+        {
+            borrowing.DueDate = DateTime.UtcNow.AddDays(14);
+        }
         borrowing.Status = "Borrowed";
+        borrowing.FineAmount = 0;
 
         await _borrowingRepository.CreateAsync(borrowing);
 
-        // Update book available copies
-        book.AvailableCopies -= 1;
+        // Decrement available copies
+        book.AvailableCopies = Math.Max(0, book.AvailableCopies - 1);
         await _bookService.UpdateAsync(book.Id!, book);
 
         return borrowing;
@@ -93,31 +82,31 @@ public class BorrowingService
     {
         var borrowing = await _borrowingRepository.GetByIdAsync(id);
         if (borrowing == null)
-            throw new Exception("Borrowing record not found.");
+            throw new KeyNotFoundException("Borrowing record not found.");
 
         if (borrowing.Status == "Returned")
-            throw new Exception("Book has already been returned.");
+            throw new InvalidOperationException("This book loan has already been marked as returned.");
 
         borrowing.ReturnedAt = DateTime.UtcNow;
         borrowing.Status = "Returned";
 
-        // Calculate fine (e.g., $1 per day late)
-        if (borrowing.ReturnedAt > borrowing.DueDate)
+        // Accurate late day calculation based on calendar days
+        if (borrowing.ReturnedAt.Value.Date > borrowing.DueDate.Date)
         {
-            var lateDays = (borrowing.ReturnedAt.Value - borrowing.DueDate).Days;
+            var lateDays = (borrowing.ReturnedAt.Value.Date - borrowing.DueDate.Date).Days;
             if (lateDays > 0)
             {
-                borrowing.FineAmount = lateDays * 1.0m; // $1 per day
+                borrowing.FineAmount = lateDays * 1.0m; // $1.00 fine per day overdue
             }
         }
 
         await _borrowingRepository.UpdateAsync(id, borrowing);
 
-        // Update book available copies
+        // Increment available copies
         var book = await _bookService.GetByIdAsync(borrowing.BookId);
         if (book != null)
         {
-            book.AvailableCopies += 1;
+            book.AvailableCopies = Math.Min(book.TotalCopies, book.AvailableCopies + 1);
             await _bookService.UpdateAsync(book.Id!, book);
         }
 

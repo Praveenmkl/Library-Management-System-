@@ -209,12 +209,9 @@ import {
                 <p class="text-xs text-muted-foreground font-mono">Book ID: {{ item.bookId }}</p>
               </div>
 
-              <div class="pt-3 border-t border-border/40 flex items-center justify-between text-xs">
+              <div class="pt-3 border-t border-border/40 flex items-center justify-end text-xs">
                 <button hlmBtn variant="outline" size="sm" (click)="returnBook(item.id!)" class="text-xs text-brand-300 border-brand-500/30 hover:bg-brand-500/15 font-bold">
                   Return Book
-                </button>
-                <button hlmBtn variant="ghost" size="sm" (click)="requestRenewal(item.id!)" class="text-xs text-brand-400 hover:text-brand-300 font-bold">
-                  Request Renewal
                 </button>
               </div>
             </div>
@@ -307,9 +304,22 @@ export class StudentPortalComponent implements OnInit {
     studentId: 'STU-2025-089'
   };
 
-  myLoans = computed(() => this.borrowingService.borrowings().filter(b => b.status === 'Borrowed' || b.status === 'Overdue'));
+  myLoans = computed(() => {
+    const cur = this.authService.currentUser();
+    const memId = cur?.memberId;
+    const email = cur?.email?.toLowerCase();
+    const uname = cur?.username?.toLowerCase();
+
+    return this.borrowingService.borrowings().filter(b => {
+      const match = (memId && b.memberId === memId) ||
+                    (email && b.memberId.toLowerCase() === email) ||
+                    (uname && b.memberId.toLowerCase() === uname);
+      return match && (b.status === 'Borrowed' || b.status === 'Overdue');
+    });
+  });
+
   overdueLoansCount = computed(() => this.myLoans().filter(b => b.status === 'Overdue').length);
-  totalFines = computed(() => this.borrowingService.borrowings().reduce((acc, b) => acc + (b.fineAmount || 0), 0));
+  totalFines = computed(() => this.myLoans().reduce((acc, b) => acc + (b.fineAmount || 0), 0));
 
   filteredBooks = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -327,6 +337,16 @@ export class StudentPortalComponent implements OnInit {
     if (cur) {
       if (cur.fullName) this.studentProfile.fullName = cur.fullName;
       if (cur.email) this.studentProfile.email = cur.email;
+      if (cur.memberId) {
+        this.studentProfile.studentId = cur.memberId;
+      } else {
+        this.authService.resolveMemberId(cur.username, cur.fullName).subscribe(id => {
+          if (id) {
+            this.studentProfile.studentId = id;
+            this.borrowingService.loadAll().subscribe();
+          }
+        });
+      }
     }
   }
 
@@ -345,11 +365,14 @@ export class StudentPortalComponent implements OnInit {
 
   reserveBook(book: Book) {
     if (confirm(`Reserve a copy of "${book.title}"?`)) {
+      const cur = this.authService.currentUser();
+      const targetMemberId = cur?.memberId || cur?.email || cur?.username || 'student_demo';
       const d = new Date();
       d.setDate(d.getDate() + 14);
+
       this.borrowingService.borrowBook({
         bookId: book.id || '',
-        memberId: this.authService.currentUser()?.username || 'student_demo',
+        memberId: targetMemberId,
         dueDate: d.toISOString(),
         status: 'Borrowed',
         fineAmount: 0
@@ -357,6 +380,7 @@ export class StudentPortalComponent implements OnInit {
         next: () => {
           alert(`Successfully reserved "${book.title}"! Enjoy reading.`);
           this.bookService.loadAll().subscribe();
+          this.borrowingService.loadAll().subscribe();
         },
         error: (err) => alert(err.error?.message || 'Failed to reserve book')
       });
@@ -369,14 +393,11 @@ export class StudentPortalComponent implements OnInit {
         next: () => {
           alert('Book returned successfully!');
           this.bookService.loadAll().subscribe();
+          this.borrowingService.loadAll().subscribe();
         },
         error: (err) => alert(err.error?.message || 'Failed to return book')
       });
     }
-  }
-
-  requestRenewal(id: string) {
-    alert('Renewal request submitted to the Librarian desk!');
   }
 }
 

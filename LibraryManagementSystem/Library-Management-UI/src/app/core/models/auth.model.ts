@@ -7,21 +7,45 @@ export interface UserDto {
 }
 
 export interface RegisterStudentDto {
+  username?: string;
   fullName: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface LoginDto {
+  username: string;
+  password: string;
 }
 
 export interface AuthResponse {
-  token?: string;
+  token: string;
   message?: string;
-  id?: string;
-  user?: {
-    id?: string;
-    username?: string;
-    role?: string;
+  user: {
+    id: string;
+    username: string;
+    role: string;
+    fullName: string;
+    email: string;
+    memberId: string;
   };
+}
+
+export interface LibrarianAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Librarian' | string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateLibrarianDto {
+  name: string;
+  email: string;
+  password: string;
 }
 
 export interface UserSession {

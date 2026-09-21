@@ -39,9 +39,10 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
           hlmBtn
           variant="default"
           (click)="openAddModal()"
-          class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700"
+          class="font-bold shadow-lg"
+          [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-gradient-to-br !from-[#96ff00] !to-[#85e600] !text-black shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
         >
-          <ng-icon name="lucideUserPlus" class="mr-2 text-base"></ng-icon>
+          <ng-icon name="lucideUserPlus" class="mr-2 text-base" [class.text-black]="authService.isAdmin() || authService.isLibrarian()"></ng-icon>
           Register Member
         </button>
       </div>
@@ -169,7 +170,13 @@ import { lucideUsers, lucideUserPlus, lucideSearch, lucidePencil, lucideTrash2, 
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="font-bold !bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white !border-0 shadow-lg shadow-brand-500/30 hover:!from-brand-600 hover:!to-brand-700">
+            <button
+              hlmBtn
+              variant="default"
+              type="submit"
+              class="font-bold shadow-lg"
+              [ngClass]="authService.isAdmin() ? '!bg-white !text-black hover:!bg-zinc-200 shadow-white/20 !border-0' : (authService.isLibrarian() ? '!bg-[#96ff00] !text-black hover:!bg-[#85e600] shadow-[#96ff00]/30 !border-0' : '!bg-gradient-to-br !from-brand-500 !to-brand-600 !text-white shadow-brand-500/30 !border-0')"
+            >
               {{ isEditMode ? 'Save Profile' : 'Register Member' }}
             </button>
           </div>

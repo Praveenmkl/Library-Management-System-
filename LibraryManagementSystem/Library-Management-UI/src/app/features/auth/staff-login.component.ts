@@ -52,7 +52,7 @@ import {
     <div class="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-4">
       <!-- Background Glow Effects -->
       <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-librarian-500/15 rounded-full blur-[128px] pointer-events-none"></div>
-      <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-purple-900/20 rounded-full blur-[96px] pointer-events-none"></div>
+      <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-[#96ff00]/20 rounded-full blur-[96px] pointer-events-none"></div>
 
       <div class="w-full max-w-md z-10">
         <!-- Logo -->
@@ -65,7 +65,7 @@ import {
         </div>
 
         <!-- Staff Login Card -->
-        <div hlmCard class="p-2 border-purple-500/20 shadow-2xl bg-zinc-950/90 backdrop-blur-2xl">
+        <div hlmCard class="p-2 border-[#96ff00]/20 shadow-2xl bg-zinc-950/90 backdrop-blur-2xl">
           <div hlmCardHeader>
             <h2 hlmCardTitle class="text-2xl text-white">Staff Sign In</h2>
             <p hlmCardDescription class="text-zinc-400">Enter your librarian credentials to access the desk</p>
@@ -149,8 +149,8 @@ export class StaffLoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  username = 'librarian_staff';
-  password = 'password123';
+  username = '';
+  password = '';
   loading = false;
   errorMessage = '';
 

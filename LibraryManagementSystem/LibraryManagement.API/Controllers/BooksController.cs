@@ -20,7 +20,6 @@ public class BooksController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var books = await _service.GetAllAsync();
-
         return Ok(books);
     }
 
@@ -28,67 +27,48 @@ public class BooksController : ControllerBase
     public async Task<IActionResult> GetById(string id)
     {
         var book = await _service.GetByIdAsync(id);
-
         if (book == null)
         {
-            return NotFound(new
-            {
-                message = "Book not found"
-            });
+            return NotFound(new { message = "Book not found" });
         }
 
         return Ok(book);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpPost]
     public async Task<IActionResult> Create(Book book)
     {
         await _service.CreateAsync(book);
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = book.Id },
-            book
-        );
+        return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(
-        string id,
-        Book book)
+    public async Task<IActionResult> Update(string id, Book book)
     {
         var existingBook = await _service.GetByIdAsync(id);
-
         if (existingBook == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Book not found" });
         }
 
         book.Id = id;
-
         await _service.UpdateAsync(id, book);
-
         return Ok(book);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
         var book = await _service.GetByIdAsync(id);
-
         if (book == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Book not found" });
         }
 
         await _service.DeleteAsync(id);
-
-        return Ok(new
-        {
-            message = "Book deleted successfully"
-        });
+        return Ok(new { message = "Book deleted successfully" });
     }
 }

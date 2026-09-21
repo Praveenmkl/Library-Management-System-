@@ -118,6 +118,10 @@ export const routes: Routes = [
   { path: 'auth/login', redirectTo: 'student/login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'student/register', pathMatch: 'full' },
 
+  // Friendly aliases
+  { path: 'books', redirectTo: 'student/books', pathMatch: 'full' },
+  { path: 'borrowings', redirectTo: 'student/borrowings', pathMatch: 'full' },
+
   // ── ADMIN ROUTES (protected) ──────────────────────────────────────────────
   {
     path: 'admin',

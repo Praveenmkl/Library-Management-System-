@@ -132,8 +132,8 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  username = 'alex_student';
-  password = 'password123';
+  username = '';
+  password = '';
   loading = false;
   errorMessage = '';
 
@@ -152,8 +152,16 @@ export class LoginComponent {
       role: 'Student'
     }).subscribe({
       next: () => {
-        this.loading = false;
-        this.router.navigate(['/student/dashboard']);
+        this.authService.resolveMemberId(this.username).subscribe({
+          next: () => {
+            this.loading = false;
+            this.router.navigate(['/student/dashboard']);
+          },
+          error: () => {
+            this.loading = false;
+            this.router.navigate(['/student/dashboard']);
+          }
+        });
       },
       error: (err) => {
         this.loading = false;

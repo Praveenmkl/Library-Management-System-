@@ -7,6 +7,7 @@ import { BookService } from '../../core/services/book.service';
 import { BorrowingService } from '../../core/services/borrowing.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Member } from '../../core/models/member.model';
+import { LibrarianAccount } from '../../core/models/auth.model';
 import { HlmButtonDirective } from '../../shared/spartan/button/hlm-button.directive';
 import { HlmInputDirective } from '../../shared/spartan/input/hlm-input.directive';
 import { HlmBadgeDirective } from '../../shared/spartan/badge/hlm-badge.directive';
@@ -19,7 +20,6 @@ import {
   lucideUserPlus,
   lucideBookOpen,
   lucideBookmarkCheck,
-  lucideSettings,
   lucideActivity,
   lucideTrash2,
   lucidePencil,
@@ -27,15 +27,6 @@ import {
   lucideUserX,
   lucideLock
 } from '@ng-icons/lucide';
-
-export interface LibrarianAccount {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Librarian';
-  isActive: boolean;
-  createdAt: string;
-}
 
 @Component({
   selector: 'app-admin-portal',
@@ -58,7 +49,6 @@ export interface LibrarianAccount {
       lucideUserPlus,
       lucideBookOpen,
       lucideBookmarkCheck,
-      lucideSettings,
       lucideActivity,
       lucideTrash2,
       lucidePencil,
@@ -201,17 +191,22 @@ export interface LibrarianAccount {
                   </button>
                 </td>
               </tr>
+              <tr *ngIf="librarians().length === 0">
+                <td colspan="5" class="py-8 text-center text-xs text-muted-foreground">
+                  No librarian staff accounts created yet. Click "Create New Librarian" to provision one.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Section 2: Student Members Directory & Role Governance -->
+      <!-- Section 2: Student Members Directory -->
       <div hlmCard class="p-6 space-y-6">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-xl font-bold text-foreground">Registered Accounts & Role Governance</h3>
-            <p class="text-xs text-muted-foreground">Manage user accounts and switch user roles (Student / Librarian / Admin)</p>
+            <h3 class="text-xl font-bold text-foreground">Registered Student Accounts</h3>
+            <p class="text-xs text-muted-foreground">Audit active student members and manage account permissions</p>
           </div>
         </div>
 
@@ -222,7 +217,7 @@ export interface LibrarianAccount {
               <tr>
                 <th class="py-3.5 px-6 font-semibold">User Name</th>
                 <th class="py-3.5 px-4 font-semibold">Email / Username</th>
-                <th class="py-3.5 px-4 font-semibold">Assigned Role</th>
+                <th class="py-3.5 px-4 font-semibold">Account Role</th>
                 <th class="py-3.5 px-4 font-semibold text-center">Status</th>
                 <th class="py-3.5 px-6 font-semibold text-right">Admin Actions</th>
               </tr>
@@ -232,15 +227,9 @@ export interface LibrarianAccount {
                 <td class="py-4 px-6 font-bold text-foreground">{{ member.name }}</td>
                 <td class="py-4 px-4 text-xs text-muted-foreground font-mono">{{ member.email }}</td>
                 <td class="py-4 px-4">
-                  <select
-                    [ngModel]="getUserRole(member)"
-                    (ngModelChange)="changeUserRole(member, $event)"
-                    class="text-xs bg-zinc-900 border border-zinc-700 text-white rounded-lg px-2 py-1 font-bold focus:border-white"
-                  >
-                    <option value="Student">Student 👨‍🎓</option>
-                    <option value="Librarian">Librarian 📚</option>
-                    <option value="Admin">Admin 👑</option>
-                  </select>
+                  <span hlmBadge variant="outline" class="text-xs font-bold text-white border-white/20 bg-white/10">
+                    Student
+                  </span>
                 </td>
                 <td class="py-4 px-4 text-center">
                   <span hlmBadge [variant]="member.isActive ? 'outline' : 'secondary'" class="text-[10px]">
@@ -253,66 +242,21 @@ export interface LibrarianAccount {
                   </button>
                 </td>
               </tr>
+              <tr *ngIf="studentMembers().length === 0">
+                <td colspan="5" class="py-8 text-center text-xs text-muted-foreground">
+                  No registered student accounts found.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </div>
-
-      <!-- Section 3: System Settings & Configurations (Admin Exclusive) -->
-      <div hlmCard class="p-6 space-y-6">
-        <div class="flex items-center justify-between pb-3 border-b border-border">
-          <div>
-            <div class="flex items-center space-x-2">
-              <ng-icon name="lucideSettings" class="text-lg text-white"></ng-icon>
-              <h3 class="text-xl font-bold text-foreground">System Parameters & Settings</h3>
-            </div>
-            <p class="text-xs text-muted-foreground mt-0.5">Configure global library parameters, fine rates, loan durations, and system states.</p>
-          </div>
-          <span hlmBadge variant="outline" class="text-[10px] text-white bg-white/10 border-white/20">Admin Only Settings</span>
-        </div>
-
-        <form (ngSubmit)="saveSystemSettings()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Overdue Fine Rate ($ / Day)</label>
-            <input hlmInput type="number" step="0.25" min="0" [(ngModel)]="systemSettings.fineRatePerDay" name="fineRate" class="focus:border-white" />
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Default Loan Duration (Days)</label>
-            <input hlmInput type="number" min="1" max="90" [(ngModel)]="systemSettings.defaultLoanDays" name="loanDays" class="focus:border-white" />
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">Max Books Allowed Per Student</label>
-            <input hlmInput type="number" min="1" max="20" [(ngModel)]="systemSettings.maxBooksPerStudent" name="maxBooks" class="focus:border-white" />
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-foreground uppercase tracking-wider">System Portal Name</label>
-            <input hlmInput type="text" [(ngModel)]="systemSettings.systemName" name="sysName" class="focus:border-white" />
-          </div>
-
-          <div class="md:col-span-2 flex items-center justify-between p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-            <div>
-              <p class="text-xs font-bold text-white uppercase tracking-wider">System Maintenance Mode</p>
-              <p class="text-xs text-zinc-400">Restricts student self-checkout when active for maintenance updates.</p>
-            </div>
-            <input type="checkbox" [(ngModel)]="systemSettings.maintenanceMode" name="maintMode" class="w-5 h-5 rounded border-zinc-700 text-white focus:ring-white" />
-          </div>
-
-          <div class="md:col-span-2 flex justify-end">
-            <button hlmBtn variant="default" type="submit" class="font-bold bg-white text-black hover:bg-zinc-200">
-              Save System Settings
-            </button>
-          </div>
-        </form>
       </div>
 
       <!-- Create Librarian Modal -->
       <app-spartan-dialog
         [(isOpen)]="isCreateModalOpen"
         title="Provision New Librarian Account"
-        description="Creates a staff Librarian account. The system assigns the Librarian role automatically."
+        description="Creates a staff Librarian account directly in the backend authentication system."
       >
         <form (ngSubmit)="saveLibrarian()" class="space-y-4">
           <div class="space-y-1.5">
@@ -321,8 +265,13 @@ export interface LibrarianAccount {
           </div>
 
           <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-foreground">Email Address</label>
+            <label class="text-xs font-semibold text-foreground">Email Address / Username</label>
             <input hlmInput type="email" [(ngModel)]="librarianEmail" name="libEmail" required placeholder="eleanor@library.org" />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-foreground">Initial Password</label>
+            <input hlmInput type="password" [(ngModel)]="librarianPassword" name="libPassword" required placeholder="••••••••" />
           </div>
 
           <div class="space-y-1.5">
@@ -332,8 +281,8 @@ export interface LibrarianAccount {
 
           <div class="flex justify-end space-x-3 pt-4 border-t border-border">
             <button hlmBtn variant="outline" type="button" (click)="isCreateModalOpen = false">Cancel</button>
-            <button hlmBtn variant="default" type="submit" class="shadow-lg shadow-white/10">
-              Create Librarian
+            <button hlmBtn variant="default" type="submit" [disabled]="isSavingLibrarian" class="shadow-lg shadow-white/10">
+              {{ isSavingLibrarian ? 'Creating...' : 'Create Librarian' }}
             </button>
           </div>
         </form>
@@ -381,30 +330,16 @@ export class AdminPortalComponent implements OnInit {
   bookService = inject(BookService);
   borrowingService = inject(BorrowingService);
 
-  // Librarians State
-  librarians = signal<LibrarianAccount[]>([
-    { id: 'lib-1', name: 'Sarah Jenkins', email: 'sarah.jenkins@library.com', role: 'Librarian', isActive: true, createdAt: '2025-01-10' },
-    { id: 'lib-2', name: 'Marcus Vance', email: 'marcus.vance@library.com', role: 'Librarian', isActive: true, createdAt: '2025-02-01' },
-    { id: 'lib-3', name: 'Elena Rostova', email: 'elena.rostova@library.com', role: 'Librarian', isActive: false, createdAt: '2025-03-15' }
-  ]);
-
+  librarians = signal<LibrarianAccount[]>([]);
   studentMembers = computed(() => this.memberService.members());
-
-  userRolesMap = signal<Record<string, string>>({});
-
-  systemSettings = {
-    fineRatePerDay: 1.00,
-    defaultLoanDays: 14,
-    maxBooksPerStudent: 5,
-    systemName: 'LibVerse Library Management',
-    maintenanceMode: false
-  };
 
   isCreateModalOpen = false;
   isEditModalOpen = false;
+  isSavingLibrarian = false;
 
   librarianName = '';
   librarianEmail = '';
+  librarianPassword = '';
 
   editingLibrarian: LibrarianAccount = {
     id: '',
@@ -416,53 +351,51 @@ export class AdminPortalComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.loadLibrarians();
     this.memberService.loadAll().subscribe();
     this.bookService.loadAll().subscribe();
     this.borrowingService.loadAll().subscribe();
   }
 
-  getUserRole(member: Member): string {
-    if (member.id && this.userRolesMap()[member.id]) {
-      return this.userRolesMap()[member.id];
-    }
-    return 'Student';
-  }
-
-  changeUserRole(member: Member, newRole: string) {
-    if (member.id) {
-      this.userRolesMap.update(map => ({ ...map, [member.id!]: newRole }));
-      alert(`User "${member.name}" role updated to ${newRole}!`);
-    }
-  }
-
-  saveSystemSettings() {
-    alert('System settings updated successfully!');
+  loadLibrarians() {
+    this.authService.getLibrarians().subscribe({
+      next: (libs) => this.librarians.set(libs || []),
+      error: () => {}
+    });
   }
 
   openCreateLibrarianModal() {
     this.librarianName = '';
     this.librarianEmail = '';
+    this.librarianPassword = '';
     this.isCreateModalOpen = true;
   }
 
   saveLibrarian() {
-    if (!this.librarianName || !this.librarianEmail) {
-      alert('Please fill out Name and Email for the Librarian.');
+    if (!this.librarianName || !this.librarianEmail || !this.librarianPassword) {
+      alert('Please fill out Name, Email, and Initial Password for the Librarian.');
       return;
     }
 
-    const newLib: LibrarianAccount = {
-      id: 'lib-' + (this.librarians().length + 1),
+    this.isSavingLibrarian = true;
+
+    this.authService.createLibrarian({
       name: this.librarianName,
       email: this.librarianEmail,
-      role: 'Librarian',
-      isActive: true,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-
-    this.librarians.update(list => [...list, newLib]);
-    alert(`Librarian account "${newLib.name}" created successfully with role Librarian!`);
-    this.isCreateModalOpen = false;
+      password: this.librarianPassword
+    }).subscribe({
+      next: (newLib) => {
+        this.isSavingLibrarian = false;
+        this.loadLibrarians();
+        alert(`Librarian account "${newLib.name}" provisioned successfully in the database!`);
+        this.isCreateModalOpen = false;
+        this.librarianPassword = '';
+      },
+      error: (err) => {
+        this.isSavingLibrarian = false;
+        alert(err.error?.message || 'Failed to create librarian account on backend.');
+      }
+    });
   }
 
   openEditLibrarianModal(lib: LibrarianAccount) {
@@ -476,27 +409,39 @@ export class AdminPortalComponent implements OnInit {
       return;
     }
 
-    this.librarians.update(list =>
-      list.map(item => item.id === this.editingLibrarian.id ? { ...this.editingLibrarian } : item)
-    );
-
-    alert(`Librarian details updated successfully!`);
-    this.isEditModalOpen = false;
+    // Toggle status if it changed
+    const current = this.librarians().find(l => l.id === this.editingLibrarian.id);
+    if (current && current.isActive !== this.editingLibrarian.isActive) {
+      this.authService.toggleLibrarianStatus(this.editingLibrarian.id).subscribe({
+        next: () => {
+          this.loadLibrarians();
+          alert('Librarian details updated successfully!');
+          this.isEditModalOpen = false;
+        },
+        error: (err) => alert(err.error?.message || 'Failed to update librarian')
+      });
+    } else {
+      this.isEditModalOpen = false;
+    }
   }
 
   toggleLibrarianStatus(lib: LibrarianAccount) {
     const newState = !lib.isActive;
     const actionText = newState ? 'Activate' : 'Deactivate';
     if (confirm(`${actionText} librarian account for "${lib.name}"?`)) {
-      this.librarians.update(list =>
-        list.map(item => item.id === lib.id ? { ...item, isActive: newState } : item)
-      );
+      this.authService.toggleLibrarianStatus(lib.id).subscribe({
+        next: () => this.loadLibrarians(),
+        error: (err) => alert(err.error?.message || 'Failed to toggle librarian status')
+      });
     }
   }
 
   deleteLibrarian(id: string) {
     if (confirm('Delete this librarian account permanently?')) {
-      this.librarians.update(list => list.filter(item => item.id !== id));
+      this.authService.deleteLibrarian(id).subscribe({
+        next: () => this.loadLibrarians(),
+        error: (err) => alert(err.error?.message || 'Failed to delete librarian')
+      });
     }
   }
 

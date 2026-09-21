@@ -27,7 +27,6 @@ public class MembersController : ControllerBase
     public async Task<IActionResult> GetById(string id)
     {
         var member = await _service.GetByIdAsync(id);
-
         if (member == null)
         {
             return NotFound(new { message = "Member not found" });
@@ -36,25 +35,19 @@ public class MembersController : ControllerBase
         return Ok(member);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpPost]
     public async Task<IActionResult> Create(Member member)
     {
         await _service.CreateAsync(member);
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = member.Id },
-            member
-        );
+        return CreatedAtAction(nameof(GetById), new { id = member.Id }, member);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, Member member)
     {
         var existingMember = await _service.GetByIdAsync(id);
-
         if (existingMember == null)
         {
             return NotFound(new { message = "Member not found" });
@@ -62,23 +55,20 @@ public class MembersController : ControllerBase
 
         member.Id = id;
         await _service.UpdateAsync(id, member);
-
         return Ok(member);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin,Librarian")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
         var member = await _service.GetByIdAsync(id);
-
         if (member == null)
         {
             return NotFound(new { message = "Member not found" });
         }
 
         await _service.DeleteAsync(id);
-
         return Ok(new { message = "Member deleted successfully" });
     }
 }

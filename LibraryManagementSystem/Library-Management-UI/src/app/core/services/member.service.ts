@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { Member } from '../models/member.model';
 
 import { environment } from '../../../environments/environment';
@@ -31,6 +31,16 @@ export class MemberService {
 
   getById(id: string): Observable<Member> {
     return this.http.get<Member>(`${this.baseUrl}/${id}`);
+  }
+
+  getByEmail(email: string): Observable<Member | undefined> {
+    return this.http.get<Member[]>(this.baseUrl).pipe(
+      tap(data => {
+        if (data) this.members.set(data);
+      }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      map((data: any[]) => data?.find(m => m.email?.toLowerCase() === email.toLowerCase()))
+    );
   }
 
   create(member: Member): Observable<Member> {

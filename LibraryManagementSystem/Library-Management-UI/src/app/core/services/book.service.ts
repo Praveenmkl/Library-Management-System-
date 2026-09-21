@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { Book } from '../models/book.model';
 
 import { environment } from '../../../environments/environment';
@@ -18,7 +18,11 @@ export class BookService {
 
   loadAll(): Observable<Book[]> {
     this.loading.set(true);
-    return this.http.get<Book[]>(this.baseUrl).pipe(
+    return this.http.get<any[]>(this.baseUrl).pipe(
+      map(data => (data || []).map(b => ({
+        ...b,
+        isbn: b.isbn || b.ISBN || ''
+      }))),
       tap({
         next: (data) => {
           this.books.set(data || []);
@@ -30,17 +34,30 @@ export class BookService {
   }
 
   getById(id: string): Observable<Book> {
-    return this.http.get<Book>(`${this.baseUrl}/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      map(b => ({
+        ...b,
+        isbn: b.isbn || b.ISBN || ''
+      }))
+    );
   }
 
   create(book: Book): Observable<Book> {
-    return this.http.post<Book>(this.baseUrl, book).pipe(
+    const payload = {
+      ...book,
+      ISBN: book.isbn
+    };
+    return this.http.post<Book>(this.baseUrl, payload).pipe(
       tap(() => this.loadAll().subscribe())
     );
   }
 
   update(id: string, book: Book): Observable<Book> {
-    return this.http.put<Book>(`${this.baseUrl}/${id}`, book).pipe(
+    const payload = {
+      ...book,
+      ISBN: book.isbn
+    };
+    return this.http.put<Book>(`${this.baseUrl}/${id}`, payload).pipe(
       tap(() => this.loadAll().subscribe())
     );
   }

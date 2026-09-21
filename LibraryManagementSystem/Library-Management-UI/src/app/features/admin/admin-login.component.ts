@@ -114,8 +114,8 @@ export class AdminLoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  username = 'admin_master';
-  password = 'password123';
+  username = '';
+  password = '';
   loading = false;
   errorMessage = '';
 

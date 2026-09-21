@@ -1,5 +1,6 @@
 using System.Text;
 using LibraryManagement.API.Database;
+using LibraryManagement.API.Middleware;
 using LibraryManagement.API.Repositories;
 using LibraryManagement.API.Services;
 using LibraryManagement.API.Settings;
@@ -96,6 +97,14 @@ builder.Services.AddScoped<BorrowingRepository>();
 builder.Services.AddScoped<BorrowingService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
+    await DbSeeder.SeedDefaultAdminAsync(dbContext, app.Logger);
+}
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
